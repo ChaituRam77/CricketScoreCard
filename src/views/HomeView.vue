@@ -1,7 +1,7 @@
 import { computed } from '@vue/runtime-core'
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
+    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <counter />
     <counter-squared />
     <buttons />
