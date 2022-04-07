@@ -1,11 +1,13 @@
 import axios from 'axios'
+// import { map } from 'core-js/core/array'
 import { registerRuntimeCompiler } from 'vue'
 import { createStore } from 'vuex'
 
 export default createStore({
   state: {
     counter: 0,
-    colorCode: 'blue'
+    colorCode: 'blue',
+    players : Map
   },
   mutations: {
     decreaseCounter(state, randomNumber){
