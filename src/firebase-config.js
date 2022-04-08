@@ -16,4 +16,4 @@ const app = initializeApp(firebaseConfig);
 initializeApp(firebaseConfig);
 const db = getFirestore()
 const ownersCollection =  collection(db,'Owners')
-export default ownersCollection
+export default db;
