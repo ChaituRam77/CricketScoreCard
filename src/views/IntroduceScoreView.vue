@@ -80,12 +80,17 @@ export default {
       playersNickName: new Map(),
       playersSubstitute: [],
       apiScore: {},
+      obj: {},
       switchValues: {
+        runs: "runs",
+        fours: "fours",
+        sixes: "sixes",
         Bowling: "wickets",
         BowledLbw: "bowledNlbw",
         CatchingStumping: "catchNstump",
         RunOuts: "runout",
         Substitute: "in11",
+        mom: "mom",
       },
     };
   },
@@ -94,7 +99,7 @@ export default {
       let playersMatch = new Map();
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
-      console.log(this.matchID + this.mom);
+      // console.log(this.matchID + this.mom);
       const matchScore = {
         scorecard: [
           {
@@ -526,41 +531,42 @@ export default {
             "427451b511msh07056d18c6e0adcp1dae07jsn577cf6594d98",
         },
       };
-      // await axios
-      //   .request(options)
-      //   .then((response) => {
-      //     this.apiScore = response.data;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-      // console.log("matchscore : " + this.apiScore);
-      const match = matchScore.appIndex.seoTitle
-        .split(",")[0]
-        .split("-")[1]
-        .split(" ");
-      const matchNm = this.matchId + "_" + match[1] + match[2] + match[3];
-      console.log(matchNm);
+      await axios
+        .request(options)
+        .then((response) => {
+          this.apiScore = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      console.log("matchscore : " + this.apiScore);
+      // const match = this.apiScore.appIndex.seoTitle
+      //   .split(",")[0]
+      //   .split("-")[1]
+      //   .split(" ");
+      const matchNm = this.matchId + "_" + this.team1 + "vs" + this.team2;
+      console.log("matchNm : " + matchNm);
       Object.entries(matchScore.scorecard).forEach((item) => {
         if (item.batsman !== null) {
           Object.entries(item[1].batsman).forEach((batsman) => {
             let playerScoreSubMap = new Map();
-            playerScoreSubMap.set("runs", this.getValidScore(batsman[1].runs));
             playerScoreSubMap.set(
-              "sixes",
+              this.switchValues.runs,
+              this.getValidScore(batsman[1].runs)
+            );
+            playerScoreSubMap.set(
+              this.switchValues.sixes,
               this.getValidScore(batsman[1].sixes)
             );
             playerScoreSubMap.set(
-              "fours",
+              this.switchValues.fours,
               this.getValidScore(batsman[1].fours)
             );
             this.playersScore.set(batsman[1].name, playerScoreSubMap);
             if (batsman[1].nickName !== undefined) {
               this.playersNickName.set(batsman[1].nickName, batsman[1].name);
             }
-            console.log("Out Description :" + batsman[1].outDec);
             this.addOutDescrition(batsman[1].outDec);
-            // console.log((batsman[1].outDec))
           });
         } else {
           console.log("In Else" + item);
@@ -570,7 +576,6 @@ export default {
         this.playersBowling,
         this.switchValues.Bowling
       );
-
       this.adjustNameNAssignToPlayerScore(
         this.playersCatchingStumping,
         this.switchValues.CatchingStumping
@@ -587,7 +592,6 @@ export default {
         this.playersSubstitute,
         this.switchValues.BowledLbw
       );
-
       this.playersScore.forEach((values, keys) => {
         let playerScoreValues = new Map();
         playerScoreValues = this.playersScore.get(keys);
@@ -611,22 +615,69 @@ export default {
       });
 
       this.playersScore.forEach((values, keys) => {
-        console.log(
-          "PlayersScore : " + keys + " score : " + [...values.entries()]
-        );
-        this.docUpdate(keys, values);
+        let subMap = new Map();
+        subMap = values;
+        if (keys == this.mom) {
+          values.set(this.switchValues.mom, "Y");
+        } else {
+          values.set(this.switchValues.mom, "N");
+        }
+        values.set("1total", this.claculateTotal(subMap));
+        const conMap = Object.fromEntries(values);
+        // console.log([...[values].entries()]);
+        console.log(conMap);
+        this.assignToDB(matchNm, 0, keys, conMap);
+        console.log(conMap);
       });
     },
-    docUpdate(k, v) {
-      const docRef = doc(db, "Owners", "Bala");
-      updateDoc(docRef, {
-        [k]: Object.entries(v),
-      }).catch((err) => {
+    claculateTotal(scoreMap) {
+      let battingPoints = 0;
+      let bowlingPoints = 0;
+      let catchingPoints = 0;
+      let runOutPoints = 0;
+      let totalPoints = 0;
+      let runs = scoreMap.get(this.switchValues.runs);
+      battingPoints = runs > 49 ? runs + (runs > 99 ? 20 : 10) : runs;
+      battingPoints =
+        battingPoints +
+        scoreMap.get(this.switchValues.fours) * 1 +
+        scoreMap.get(this.switchValues.sixes) * 2;
+      // console.log("battingPoints : " + battingPoints);
+      let wickets = scoreMap.get(this.switchValues.Bowling);
+      bowlingPoints =
+        wickets > 2 ? wickets * 20 + (wickets > 4 ? 20 : 10) : wickets * 20;
+      bowlingPoints =
+        bowlingPoints + scoreMap.get(this.switchValues.BowledLbw) * 5;
+      // console.log("bowlingPoints : " + bowlingPoints);
+      catchingPoints = scoreMap.get(this.switchValues.CatchingStumping) * 10;
+      // console.log("catchingPoints : " + catchingPoints);
+      runOutPoints = scoreMap.get(this.switchValues.RunOuts) * 10;
+      // console.log("runOutPoints : " + runOutPoints);
+      totalPoints =
+        battingPoints +
+        bowlingPoints +
+        catchingPoints +
+        runOutPoints +
+        (scoreMap.get(this.switchValues.Substitute) == "Y" ? 2 : 0) +
+        (scoreMap.get(this.switchValues.mom) == "Y" ? 30 : 0);
+      // console.log("totalPoints : " + totalPoints);
+      return totalPoints;
+    },
+    assignToDB(matchNm, totalPoints, k, v) {
+      const docRef = doc(db, "Owners", "MatchScores");
+      this.obj = v;
+      setDoc(
+        docRef,
+        {
+          [matchNm]: { "1total": totalPoints, [k]: this.obj },
+        },
+        { merge: true }
+      ).catch((err) => {
         console.log("error: " + err.message);
       });
     },
     getValidScore(value) {
-      return value == undefined ? "0" : value;
+      return value == undefined ? 0 : value;
     },
     addOutDescrition(outDesc) {
       /**
