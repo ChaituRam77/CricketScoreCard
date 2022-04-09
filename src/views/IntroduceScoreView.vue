@@ -63,8 +63,9 @@
 
 <script>
 import db from "../firebase-config";
-import { addDoc, setDoc, doc, updateDoc } from "firebase/firestore";
+import { getDoc, setDoc, doc } from "firebase/firestore";
 import axios from "axios";
+
 export default {
   data() {
     return {
@@ -96,6 +97,8 @@ export default {
   },
   methods: {
     async introduceMatchScore() {
+      const dataSquad = require("../data/squads.json");
+      console.log(dataSquad);
       let playersMatch = new Map();
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
@@ -521,25 +524,25 @@ export default {
         responseLastUpdated: "1648837358",
       };
 
-      const options = {
-        method: "GET",
-        url: "https://unofficial-cricbuzz.p.rapidapi.com/matches/get-scorecard",
-        params: { matchId: this.matchID },
-        headers: {
-          "X-RapidAPI-Host": "unofficial-cricbuzz.p.rapidapi.com",
-          "X-RapidAPI-Key":
-            "427451b511msh07056d18c6e0adcp1dae07jsn577cf6594d98",
-        },
-      };
-      await axios
-        .request(options)
-        .then((response) => {
-          this.apiScore = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      console.log("matchscore : " + this.apiScore);
+      // const options = {
+      //   method: "GET",
+      //   url: "https://unofficial-cricbuzz.p.rapidapi.com/matches/get-scorecard",
+      //   params: { matchId: this.matchID },
+      //   headers: {
+      //     "X-RapidAPI-Host": "unofficial-cricbuzz.p.rapidapi.com",
+      //     "X-RapidAPI-Key":
+      //       "427451b511msh07056d18c6e0adcp1dae07jsn577cf6594d98",
+      //   },
+      // };
+      // await axios
+      //   .request(options)
+      //   .then((response) => {
+      //     this.apiScore = response.data;
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+      // console.log("matchscore : " + this.apiScore);
       // const match = this.apiScore.appIndex.seoTitle
       //   .split(",")[0]
       //   .split("-")[1]
@@ -625,10 +628,24 @@ export default {
         values.set("1total", this.claculateTotal(subMap));
         const conMap = Object.fromEntries(values);
         // console.log([...[values].entries()]);
-        console.log(conMap);
-        this.assignToDB(matchNm, 0, keys, conMap);
+        // this.assignToDB(matchNm, 0, keys, conMap);
+        console.log("Player : " + keys);
         console.log(conMap);
       });
+
+      const docRef = doc(db, "Owners", "teams");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const ownerTeamsMap = new Map(Object.entries(docSnap.data()));
+        ownerTeamsMap.forEach((values, keys) => {
+          const ownerPlayersArr = values;
+          ownerPlayersArr.forEach((element) => console.log(element));
+        });
+        // console.log("Names:" + ownerTeamsMap.get("Names"));
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
     },
     claculateTotal(scoreMap) {
       let battingPoints = 0;
