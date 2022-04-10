@@ -548,6 +548,7 @@ export default {
       //   .split("-")[1]
       //   .split(" ");
       const matchNm = this.matchId + "_" + this.team1 + "vs" + this.team2;
+      // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
       console.log("matchNm : " + matchNm);
       Object.entries(matchScore.scorecard).forEach((item) => {
         if (item.batsman !== null) {
@@ -629,17 +630,55 @@ export default {
         const conMap = Object.fromEntries(values);
         // console.log([...[values].entries()]);
         // this.assignToDB(matchNm, 0, keys, conMap);
-        console.log("Player : " + keys);
-        console.log(conMap);
+        // console.log("Player : " + keys);
+        // console.log(conMap);
       });
 
       const docRef = doc(db, "Owners", "teams");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const ownerTeamsMap = new Map(Object.entries(docSnap.data()));
+        console.log(ownerTeamsMap);
         ownerTeamsMap.forEach((values, keys) => {
+          //key : OwnerNames values : team players
+          let matchTotalPoints = 0;
           const ownerPlayersArr = values;
-          ownerPlayersArr.forEach((element) => console.log(element));
+          const ownerName = keys;
+          ownerPlayersArr.forEach(
+            (
+              element //element owner team each player
+            ) =>
+              this.playersScore.forEach((values, keys) => {
+                // keys : match played players & values :their scores
+                let playerPoints = new Map();
+                playerPoints = values;
+                console.log("Player : " + keys);
+                console.log("Total : " + [...[values].entries()]);
+                console.log(playerPoints);
+                matchTotalPoints =
+                  matchTotalPoints + playerPoints.get("1total");
+                if (element == keys) {
+                  // this.assignToDB(
+                  //   ownerName,
+                  //   matchNm,
+                  //   matchTotalPoints,
+                  //   keys,
+                  //   playerScoreValues
+                  // );
+                  console.log(
+                    ownerName +
+                      ": " +
+                      "matchNm" +
+                      ": " +
+                      matchTotalPoints +
+                      ": " +
+                      keys +
+                      ": " +
+                      playerPoints
+                  );
+                }
+              })
+          );
         });
         // console.log("Names:" + ownerTeamsMap.get("Names"));
       } else {
@@ -680,8 +719,8 @@ export default {
       // console.log("totalPoints : " + totalPoints);
       return totalPoints;
     },
-    assignToDB(matchNm, totalPoints, k, v) {
-      const docRef = doc(db, "Owners", "MatchScores");
+    assignToDB(document, matchNm, totalPoints, k, v) {
+      const docRef = doc(db, "Owners", document);
       this.obj = v;
       setDoc(
         docRef,
