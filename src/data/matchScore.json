@@ -1,0 +1,852 @@
+{
+        "458886_CSKvsKKR": [
+                {
+        scorecard: [
+                                {
+            inningsId: 1,
+            batsman: [
+                                                {
+                id: 11813,
+                balls: 4,
+                strkRate: "0",
+                name: "Ruturaj Gaikwad",
+                outDec: "c Nitish Rana b Umesh",
+                                                },
+                                                {
+                id: 9838,
+                balls: 8,
+                runs: 3,
+                strkRate: "37.5",
+                name: "Conway",
+                outDec: "c Shreyas Iyer b Umesh",
+                                                },
+                                                {
+                id: 527,
+                balls: 21,
+                runs: 28,
+                fours: 2,
+                sixes: 2,
+                strkRate: "133.33",
+                name: "Uthappa",
+                outDec: "st Jackson b Chakaravarthy",
+                                                },
+                                                {
+                id: 6311,
+                balls: 17,
+                runs: 15,
+                fours: 1,
+                sixes: 1,
+                strkRate: "88.24",
+                name: "Rayudu",
+                outDec: "run out (Shreyas Iyer/Narine) ",
+                                                },
+                                                {
+                id: 587,
+                balls: 28,
+                runs: 26,
+                sixes: 1,
+                strkRate: "92.86",
+                name: "Ravindra Jadeja",
+                isCaptain: true,
+                outDec: "not out",
+                                                },
+                                                {
+                id: 11195,
+                balls: 6,
+                runs: 3,
+                strkRate: "50",
+                name: "Shivam Dube",
+                outDec: "c Narine b Russell",
+                                                },
+                                                {
+                id: 265,
+                balls: 38,
+                runs: 50,
+                fours: 7,
+                sixes: 1,
+                strkRate: "131.58",
+                name: "Dhoni",
+                isKeeper: true,
+                outDec: "not out",
+                                                },
+                                                {
+                id: 242,
+                strkRate: "0",
+                name: "DJ Bravo",
+                                                },
+                                                {
+                id: 10100,
+                strkRate: "0",
+                name: "Santner",
+                                                },
+                                                {
+                id: 7625,
+                strkRate: "0",
+                name: "Milne",
+                                                },
+                                                {
+                id: 11307,
+                strkRate: "0",
+                name: "Tushar Deshpande",
+                                                },
+                                        ],
+            bowler: [
+                                                {
+                id: 1858,
+                overs: "4",
+                wickets: 2,
+                runs: 20,
+                economy: "5",
+                name: "Umesh",
+                                                },
+                                                {
+                id: 12345,
+                overs: "4",
+                runs: 35,
+                economy: "8.8",
+                name: "Shivam Mavi",
+                                                },
+                                                {
+                id: 12926,
+                overs: "4",
+                wickets: 1,
+                runs: 23,
+                economy: "5.8",
+                name: "Chakaravarthy",
+                                                },
+                                                {
+                id: 2276,
+                overs: "4",
+                runs: 15,
+                economy: "3.8",
+                name: "Narine",
+                                                },
+                                                {
+                id: 7736,
+                overs: "4",
+                wickets: 1,
+                runs: 38,
+                economy: "9.5",
+                name: "Russell",
+                                                },
+                                        ],
+            fow: [
+                                                {
+                fow: [
+                                                                {
+                    batsmanId: 11813,
+                    batsmanName: "Ruturaj Gaikwad",
+                    overNbr: 0.3,
+                    runs: 2,
+                    ballNbr: 3,
+                                                                },
+                                                                {
+                    batsmanId: 9838,
+                    batsmanName: "Conway",
+                    overNbr: 4.1,
+                    runs: 28,
+                    ballNbr: 41,
+                                                                },
+                                                                {
+                    batsmanId: 527,
+                    batsmanName: "Uthappa",
+                    overNbr: 7.5,
+                    runs: 49,
+                    ballNbr: 75,
+                                                                },
+                                                                {
+                    batsmanId: 6311,
+                    batsmanName: "Rayudu",
+                    overNbr: 8.4,
+                    runs: 52,
+                    ballNbr: 84,
+                                                                },
+                                                                {
+                    batsmanId: 11195,
+                    batsmanName: "Shivam Dube",
+                    overNbr: 10.5,
+                    runs: 61,
+                    ballNbr: 105,
+                                                                },
+                                                        ],
+                                                },
+                                        ],
+            extras: {
+              wides: 4,
+              noBalls: 2,
+              total: 6,
+                                        },
+            pp: [
+                                                {
+                powerPlay: [
+                                                                {
+                    id: 41,
+                    ovrFrom: 0.1,
+                    ovrTo: 6.0,
+                    ppType: "mandatory",
+                    run: 35,
+                                                                },
+                                                        ],
+                                                },
+                                        ],
+            score: 131,
+            wickets: 5,
+            overs: 20.0,
+            runRate: 6.55,
+            batTeamName: "Chennai Super Kings",
+            batTeamSName: "CSK",
+            ballNbr: 120,
+            rpb: 0.66,
+                                },
+                                {
+            inningsId: 2,
+            batsman: [
+                                                {
+                id: 1447,
+                balls: 34,
+                runs: 44,
+                fours: 6,
+                sixes: 1,
+                strkRate: "129.41",
+                name: "Ajinkya Rahane",
+                nickName: "Rahane",
+                outDec: "c Ravindra Jadeja b Santner",
+                                                },
+                                                {
+                id: 10917,
+                balls: 16,
+                runs: 16,
+                fours: 2,
+                strkRate: "100",
+                name: "Venkatesh Iyer",
+                nickName: "Venkatesh Iyer",
+                outDec: "c Dhoni b DJ Bravo",
+                                                },
+                                                {
+                id: 9204,
+                balls: 17,
+                runs: 21,
+                fours: 2,
+                sixes: 1,
+                strkRate: "123.53",
+                name: "Nitish Rana",
+                nickName: "Nitish Rana",
+                outDec: "c Rayudu b DJ Bravo",
+                                                },
+                                                {
+                id: 9428,
+                balls: 19,
+                runs: 20,
+                fours: 1,
+                strkRate: "105.26",
+                name: "Shreyas Iyer",
+                nickName: "Shreyas Iyer",
+                isCaptain: true,
+                outDec: "not out",
+                                                },
+                                                {
+                id: 7990,
+                balls: 22,
+                runs: 25,
+                fours: 1,
+                sixes: 1,
+                strkRate: "113.64",
+                name: "Sam Billings",
+                nickName: "Billings",
+                outDec: "c Tushar Deshpande b DJ Bravo",
+                                                },
+                                                {
+                id: 8846,
+                balls: 3,
+                runs: 3,
+                strkRate: "100",
+                name: "Sheldon Jackson",
+                nickName: "Jackson",
+                isKeeper: true,
+                outDec: "not out",
+                                                },
+                                                {
+                id: 7736,
+                strkRate: "0",
+                name: "Andre Russell",
+                nickName: "Russell",
+                                                },
+                                                {
+                id: 2276,
+                strkRate: "0",
+                name: "Sunil Narine",
+                nickName: "Narine",
+                                                },
+                                                {
+                id: 1858,
+                strkRate: "0",
+                name: "Umesh Yadav",
+                nickName: "Umesh",
+                                                },
+                                                {
+                id: 12345,
+                strkRate: "0",
+                name: "Shivam Mavi",
+                nickName: "Shivam Mavi",
+                                                },
+                                                {
+                id: 12926,
+                strkRate: "0",
+                name: "Varun Chakaravarthy",
+                nickName: "Chakaravarthy",
+                                                },
+                                        ],
+            bowler: [
+                                                {
+                id: 11307,
+                overs: "3",
+                runs: 23,
+                economy: "7.7",
+                name: "Tushar Deshpande",
+                nickName: "Tushar Deshpande",
+                                                },
+                                                {
+                id: 7625,
+                overs: "2.3",
+                runs: 19,
+                economy: "7.6",
+                name: "Adam Milne",
+                nickName: "Milne",
+                                                },
+                                                {
+                id: 10100,
+                overs: "4",
+                wickets: 1,
+                runs: 31,
+                economy: "7.8",
+                name: "Mitchell Santner",
+                nickName: "Santner",
+                                                },
+                                                {
+                id: 242,
+                overs: "4",
+                wickets: 3,
+                runs: 20,
+                economy: "5",
+                name: "Dwayne Bravo",
+                nickName: "DJ Bravo",
+                                                },
+                                                {
+                id: 11195,
+                overs: "1",
+                runs: 11,
+                economy: "11",
+                name: "Shivam Dube",
+                nickName: "Shivam Dube",
+                                                },
+                                                {
+                id: 587,
+                overs: "4",
+                runs: 25,
+                economy: "6.2",
+                name: "Ravindra Jadeja",
+                nickName: "Ravindra Jadeja",
+                isCaptain: true,
+                                                },
+                                        ],
+            fow: [
+                                                {
+                fow: [
+                                                                {
+                    batsmanId: 10917,
+                    batsmanName: "Venkatesh Iyer",
+                    overNbr: 6.2,
+                    runs: 43,
+                    ballNbr: 62,
+                                                                },
+                                                                {
+                    batsmanId: 9204,
+                    batsmanName: "Nitish Rana",
+                    overNbr: 9.6,
+                    runs: 76,
+                    ballNbr: 96,
+                                                                },
+                                                                {
+                    batsmanId: 1447,
+                    batsmanName: "Ajinkya Rahane",
+                    overNbr: 11.4,
+                    runs: 87,
+                    ballNbr: 114,
+                                                                },
+                                                                {
+                    batsmanId: 7990,
+                    batsmanName: "Sam Billings",
+                    overNbr: 17.3,
+                    runs: 123,
+                    ballNbr: 173,
+                                                                },
+                                                        ],
+                                                },
+                                        ],
+            extras: {
+              byes: 4,
+              total: 4,
+                                        },
+            pp: [
+                                                {
+                powerPlay: [
+                                                                {
+                    id: 42,
+                    ovrFrom: 0.1,
+                    ovrTo: 6.0,
+                    ppType: "mandatory",
+                    run: 43,
+                                                                },
+                                                        ],
+                                                },
+                                        ],
+            score: 133,
+            wickets: 4,
+            overs: 18.3,
+            runRate: 7.19,
+            batTeamName: "Kolkata Knight Riders",
+            batTeamSName: "KKR",
+            ballNbr: 111,
+            rpb: 0.73,
+                                },
+                        ],
+        isMatchComplete: true,
+        appIndex: {
+          seoTitle: "Cricket scorecard - CSK vs KKR 1st Match,Indian Premier League 2022 | Cricbuzz.com",
+          webURL: "http://www.cricbuzz.com/live-cricket-scorecard/45886/csk-vs-kkr-1st-match-indian-premier-league-2022",
+                        },
+        status: "Kolkata Knight Riders won by 6 wkts",
+        responseLastUpdated: "1648837358",
+                };
+        ],
+        "45901_LSGvsGT": [
+                {
+                        "inningsId": 1,
+                        "batsman": [
+                                {
+                                        "id": 8733,
+                                        "balls": 1,
+                                        "strkRate": "0",
+                                        "name": "Rahul",
+                                        "isCaptain": true,
+                                        "outDec": "c Wade b Shami"
+                                },
+                                {
+                                        "id": 8520,
+                                        "balls": 9,
+                                        "runs": 7,
+                                        "fours": 1,
+                                        "strkRate": "77.78",
+                                        "name": "de Kock",
+                                        "isKeeper": true,
+                                        "outDec": " b Shami"
+                                },
+                                {
+                                        "id": 8579,
+                                        "balls": 9,
+                                        "runs": 10,
+                                        "fours": 2,
+                                        "strkRate": "111.11",
+                                        "name": "Lewis",
+                                        "outDec": "c Shubman Gill b Aaron"
+                                },
+                                {
+                                        "id": 1836,
+                                        "balls": 5,
+                                        "runs": 6,
+                                        "fours": 1,
+                                        "strkRate": "120",
+                                        "name": "Manish Pandey",
+                                        "outDec": " b Shami"
+                                },
+                                {
+                                        "id": 9427,
+                                        "balls": 41,
+                                        "runs": 55,
+                                        "fours": 6,
+                                        "sixes": 2,
+                                        "strkRate": "134.15",
+                                        "name": "Deepak Hooda",
+                                        "outDec": "lbw b Rashid Khan"
+                                },
+                                {
+                                        "id": 13907,
+                                        "balls": 41,
+                                        "runs": 54,
+                                        "fours": 4,
+                                        "sixes": 3,
+                                        "strkRate": "131.71",
+                                        "name": "Ayush Badoni",
+                                        "outDec": "c Hardik Pandya b Aaron"
+                                },
+                                {
+                                        "id": 11311,
+                                        "balls": 13,
+                                        "runs": 21,
+                                        "fours": 3,
+                                        "strkRate": "161.54",
+                                        "name": "Krunal Pandya",
+                                        "outDec": "not out"
+                                },
+                                {
+                                        "id": 8393,
+                                        "balls": 1,
+                                        "runs": 1,
+                                        "strkRate": "100",
+                                        "name": "Chameera",
+                                        "outDec": "not out"
+                                },
+                                {
+                                        "id": 13534,
+                                        "strkRate": "0",
+                                        "name": "Mohsin Khan"
+                                },
+                                {
+                                        "id": 14659,
+                                        "strkRate": "0",
+                                        "name": "Ravi Bishnoi"
+                                },
+                                {
+                                        "id": 9781,
+                                        "strkRate": "0",
+                                        "name": "Avesh Khan"
+                                }
+                        ],
+                        "bowler": [
+                                {
+                                        "id": 7909,
+                                        "overs": "4",
+                                        "wickets": 3,
+                                        "runs": 25,
+                                        "economy": "6.2",
+                                        "name": "Shami"
+                                },
+                                {
+                                        "id": 6293,
+                                        "overs": "4",
+                                        "wickets": 2,
+                                        "runs": 45,
+                                        "economy": "11.2",
+                                        "name": "Aaron"
+                                },
+                                {
+                                        "id": 10692,
+                                        "overs": "4",
+                                        "runs": 24,
+                                        "economy": "6",
+                                        "name": "Lockie Ferguson"
+                                },
+                                {
+                                        "id": 9647,
+                                        "overs": "4",
+                                        "runs": 37,
+                                        "economy": "9.2",
+                                        "name": "Hardik Pandya",
+                                        "isCaptain": true
+                                },
+                                {
+                                        "id": 10738,
+                                        "overs": "4",
+                                        "wickets": 1,
+                                        "runs": 27,
+                                        "economy": "6.8",
+                                        "name": "Rashid Khan"
+                                }
+                        ],
+                        "fow": [
+                                {
+                                        "fow": [
+                                                {
+                                                        "batsmanId": 8733,
+                                                        "batsmanName": "Rahul",
+                                                        "overNbr": 0.1,
+                                                        "ballNbr": 1
+                                                },
+                                                {
+                                                        "batsmanId": 8520,
+                                                        "batsmanName": "de Kock",
+                                                        "overNbr": 2.3,
+                                                        "runs": 13,
+                                                        "ballNbr": 23
+                                                },
+                                                {
+                                                        "batsmanId": 8579,
+                                                        "batsmanName": "Lewis",
+                                                        "overNbr": 3.3,
+                                                        "runs": 20,
+                                                        "ballNbr": 33
+                                                },
+                                                {
+                                                        "batsmanId": 1836,
+                                                        "batsmanName": "Manish Pandey",
+                                                        "overNbr": 4.3,
+                                                        "runs": 29,
+                                                        "ballNbr": 43
+                                                },
+                                                {
+                                                        "batsmanId": 9427,
+                                                        "batsmanName": "Deepak Hooda",
+                                                        "overNbr": 15.5,
+                                                        "runs": 116,
+                                                        "ballNbr": 155
+                                                },
+                                                {
+                                                        "batsmanId": 13907,
+                                                        "batsmanName": "Ayush Badoni",
+                                                        "overNbr": 19.4,
+                                                        "runs": 156,
+                                                        "ballNbr": 194
+                                                }
+                                        ]
+                                }
+                        ],
+                        "extras": {
+                                "wides": 4,
+                                "total": 4
+                        },
+                        "pp": [
+                                {
+                                        "powerPlay": [
+                                                {
+                                                        "id": 50,
+                                                        "ovrFrom": 0.1,
+                                                        "ovrTo": 6,
+                                                        "ppType": "mandatory",
+                                                        "run": 32
+                                                }
+                                        ]
+                                }
+                        ],
+                        "score": 158,
+                        "wickets": 6,
+                        "overs": 20,
+                        "runRate": 7.9,
+                        "batTeamName": "Lucknow Super Giants",
+                        "batTeamSName": "LSG",
+                        "ballNbr": 120,
+                        "rpb": 0.79
+                },
+                {
+                        "inningsId": 2,
+                        "batsman": [
+                                {
+                                        "id": 11808,
+                                        "balls": 3,
+                                        "strkRate": "0",
+                                        "name": "Shubman Gill",
+                                        "nickName": "Shubman Gill",
+                                        "outDec": "c Deepak Hooda b Chameera"
+                                },
+                                {
+                                        "id": 1649,
+                                        "balls": 29,
+                                        "runs": 30,
+                                        "fours": 4,
+                                        "strkRate": "103.45",
+                                        "name": "Matthew Wade",
+                                        "nickName": "Wade",
+                                        "isKeeper": true,
+                                        "outDec": " b Deepak Hooda"
+                                },
+                                {
+                                        "id": 8204,
+                                        "balls": 6,
+                                        "runs": 4,
+                                        "strkRate": "66.67",
+                                        "name": "Vijay Shankar",
+                                        "nickName": "Vijay Shankar",
+                                        "outDec": " b Chameera"
+                                },
+                                {
+                                        "id": 9647,
+                                        "balls": 28,
+                                        "runs": 33,
+                                        "fours": 5,
+                                        "sixes": 1,
+                                        "strkRate": "117.86",
+                                        "name": "Hardik Pandya",
+                                        "nickName": "Hardik Pandya",
+                                        "isCaptain": true,
+                                        "outDec": "c Manish Pandey b Krunal Pandya"
+                                },
+                                {
+                                        "id": 6349,
+                                        "balls": 21,
+                                        "runs": 30,
+                                        "fours": 1,
+                                        "sixes": 2,
+                                        "strkRate": "142.86",
+                                        "name": "David Miller",
+                                        "nickName": "Miller",
+                                        "outDec": "c Rahul b Avesh Khan"
+                                },
+                                {
+                                        "id": 9693,
+                                        "balls": 24,
+                                        "runs": 40,
+                                        "fours": 5,
+                                        "sixes": 2,
+                                        "strkRate": "166.67",
+                                        "name": "Rahul Tewatia",
+                                        "nickName": "Rahul Tewatia",
+                                        "outDec": "not out"
+                                },
+                                {
+                                        "id": 10499,
+                                        "balls": 7,
+                                        "runs": 15,
+                                        "fours": 3,
+                                        "strkRate": "214.29",
+                                        "name": "Abhinav Manohar",
+                                        "nickName": "Abhinav Manohar",
+                                        "outDec": "not out"
+                                },
+                                {
+                                        "id": 10738,
+                                        "strkRate": "0",
+                                        "name": "Rashid Khan",
+                                        "nickName": "Rashid Khan"
+                                },
+                                {
+                                        "id": 10692,
+                                        "strkRate": "0",
+                                        "name": "Lockie Ferguson",
+                                        "nickName": "Lockie Ferguson"
+                                },
+                                {
+                                        "id": 6293,
+                                        "strkRate": "0",
+                                        "name": "Varun Aaron",
+                                        "nickName": "Aaron"
+                                },
+                                {
+                                        "id": 7909,
+                                        "strkRate": "0",
+                                        "name": "Mohammed Shami",
+                                        "nickName": "Shami"
+                                }
+                        ],
+                        "bowler": [
+                                {
+                                        "id": 8393,
+                                        "overs": "3",
+                                        "wickets": 2,
+                                        "runs": 22,
+                                        "economy": "7.3",
+                                        "name": "Dushmantha Chameera",
+                                        "nickName": "Chameera"
+                                },
+                                {
+                                        "id": 9781,
+                                        "overs": "3.4",
+                                        "wickets": 1,
+                                        "runs": 33,
+                                        "economy": "9",
+                                        "name": "Avesh Khan",
+                                        "nickName": "Avesh Khan"
+                                },
+                                {
+                                        "id": 13534,
+                                        "overs": "2",
+                                        "runs": 18,
+                                        "economy": "9",
+                                        "name": "Mohsin Khan",
+                                        "nickName": "Mohsin Khan"
+                                },
+                                {
+                                        "id": 14659,
+                                        "overs": "4",
+                                        "runs": 34,
+                                        "economy": "8.5",
+                                        "name": "Ravi Bishnoi",
+                                        "nickName": "Ravi Bishnoi"
+                                },
+                                {
+                                        "id": 11311,
+                                        "overs": "4",
+                                        "wickets": 1,
+                                        "runs": 17,
+                                        "economy": "4.2",
+                                        "name": "Krunal Pandya",
+                                        "nickName": "Krunal Pandya"
+                                },
+                                {
+                                        "id": 9427,
+                                        "overs": "3",
+                                        "wickets": 1,
+                                        "runs": 31,
+                                        "economy": "10.3",
+                                        "name": "Deepak Hooda",
+                                        "nickName": "Deepak Hooda"
+                                }
+                        ],
+                        "fow": [
+                                {
+                                        "fow": [
+                                                {
+                                                        "batsmanId": 11808,
+                                                        "batsmanName": "Shubman Gill",
+                                                        "overNbr": 0.3,
+                                                        "runs": 4,
+                                                        "ballNbr": 3
+                                                },
+                                                {
+                                                        "batsmanId": 8204,
+                                                        "batsmanName": "Vijay Shankar",
+                                                        "overNbr": 2.1,
+                                                        "runs": 15,
+                                                        "ballNbr": 21
+                                                },
+                                                {
+                                                        "batsmanId": 9647,
+                                                        "batsmanName": "Hardik Pandya",
+                                                        "overNbr": 10.1,
+                                                        "runs": 72,
+                                                        "ballNbr": 101
+                                                },
+                                                {
+                                                        "batsmanId": 1649,
+                                                        "batsmanName": "Matthew Wade",
+                                                        "overNbr": 11.5,
+                                                        "runs": 78,
+                                                        "ballNbr": 115
+                                                },
+                                                {
+                                                        "batsmanId": 6349,
+                                                        "batsmanName": "David Miller",
+                                                        "overNbr": 17.3,
+                                                        "runs": 138,
+                                                        "ballNbr": 173
+                                                }
+                                        ]
+                                }
+                        ],
+                        "extras": {
+                                "legByes": 6,
+                                "wides": 3,
+                                "total": 9
+                        },
+                        "pp": [
+                                {
+                                        "powerPlay": [
+                                                {
+                                                        "id": 51,
+                                                        "ovrFrom": 0.1,
+                                                        "ovrTo": 6,
+                                                        "ppType": "mandatory",
+                                                        "run": 44
+                                                }
+                                        ]
+                                }
+                        ],
+                        "score": 161,
+                        "wickets": 5,
+                        "overs": 19.4,
+                        "runRate": 8.19,
+                        "batTeamName": "Gujarat Titans",
+                        "batTeamSName": "GT",
+                        "ballNbr": 118,
+                        "rpb": 0.83
+                }
+        ]
+}
