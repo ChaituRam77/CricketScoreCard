@@ -1,15 +1,26 @@
-import { computed } from '@vue/runtime-core'
 <template>
-  <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <counter />
-    <counter-squared />
-    <buttons />
-    <color-code /> -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offser-md-3">
+        <h2>Introduce match details</h2>
+      </div>
+      <form @submit.prevent="getDataFromDB">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
+import db from "../firebase-config";
+import {
+  collection,
+  getDoc,
+  setDoc,
+  doc,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
 export default {
   // name: 'HomeView',
   // components: {
@@ -26,11 +37,11 @@ export default {
       docSnaps.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
       let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
       let matchTotalPoints = 0;
-      ownerTeamsMap.delete("Names");
+      let ownersArr = ownerTeamsMap.get("Names");
       // ownerTeamsMap.forEach((values, keys) => {
-      for (let [keys, values] of ownerTeamsMap) {
-        //key : OwnerNames values : team players
-        console.log(keys + " : " + values);
+      for (let i = 0; i < ownersArr.length; i++) {
+        const owner = ownersArr[i];
+        console.log(owner);
       }
     },
   },
