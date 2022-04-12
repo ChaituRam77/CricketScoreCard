@@ -4,7 +4,7 @@
       <div class="col-md-6 offser-md-3">
         <h2>Introduce match details</h2>
       </div>
-      <form @submit.prevent="introduceMatchScore">
+      <form @submit.prevent="validsecretkeyAndProceed">
         <div class="form-group row">
           <label for="inputMatchID" class="col-sm-2 col-form-label"
             >Match ID</label
@@ -31,6 +31,7 @@
             />
           </div>
         </div>
+
         <div class="form-group row">
           <label for="inputTeam2" class="col-sm-2 col-form-label">Team 2</label>
           <div class="col-sm-10">
@@ -55,6 +56,20 @@
             />
           </div>
         </div>
+        <div class="form-group row">
+          <label for="secretKey" class="col-sm-2 col-form-label"
+            >Secret Key</label
+          >
+          <div class="col-sm-10">
+            <input
+              type="password"
+              class="form-control"
+              id="inputPassword"
+              placeholder="*******"
+              v-model="secretKey"
+            />
+          </div>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     </div>
@@ -63,7 +78,14 @@
 
 <script>
 import db from "../firebase-config";
-import { getDoc, setDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  getDoc,
+  setDoc,
+  doc,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
 import axios from "axios";
 
 export default {
@@ -73,12 +95,17 @@ export default {
       team1: null,
       team2: null,
       mom: null,
+      secretKey: null,
+      showlogs: null,
+      useAPI: null,
+      writeToDB: null,
       playersScore: new Map(),
       playersBowling: new Map(),
       playersCatchingStumping: new Map(),
       playersRunOuts: new Map(),
       playersBowlingBowledLbw: new Map(),
       playersNickName: new Map(),
+      playersNickNameAsValue: new Map(),
       playersSubstitute: [],
       apiScore: {},
       obj: {},
@@ -96,464 +123,67 @@ export default {
     };
   },
   methods: {
+    validsecretkeyAndProceed() {
+      if (this.secretKey == "HailKing") {
+        this.showlogs = true;
+        this.useAPI = true;
+        this.writeToDB = false;
+        this.introduceMatchScore();
+      } else {
+        alert("Invalid Secret Key");
+      }
+    },
     async introduceMatchScore() {
-      const dataSquad = require("../data/squads.json");
-      console.log(dataSquad);
+      let scoreCard = new Map();
+      let matchScore = require("../data/test.json");
       let playersMatch = new Map();
+      let matchScoreTotalPoints = 0;
+      let ownerMatchTotalPoints = new Map();
+      let ownerTotalPoints = new Map();
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
-      // console.log(this.matchID + this.mom);
-      const matchScore = {
-        scorecard: [
-          {
-            inningsId: 1,
-            batsman: [
-              {
-                id: 11813,
-                balls: 4,
-                strkRate: "0",
-                name: "Ruturaj Gaikwad",
-                outDec: "c Nitish Rana b Umesh",
-              },
-              {
-                id: 9838,
-                balls: 8,
-                runs: 3,
-                strkRate: "37.5",
-                name: "Conway",
-                outDec: "c Shreyas Iyer b Umesh",
-              },
-              {
-                id: 527,
-                balls: 21,
-                runs: 28,
-                fours: 2,
-                sixes: 2,
-                strkRate: "133.33",
-                name: "Uthappa",
-                outDec: "st Jackson b Chakaravarthy",
-              },
-              {
-                id: 6311,
-                balls: 17,
-                runs: 15,
-                fours: 1,
-                sixes: 1,
-                strkRate: "88.24",
-                name: "Rayudu",
-                outDec: "run out (Shreyas Iyer/Narine) ",
-              },
-              {
-                id: 587,
-                balls: 28,
-                runs: 26,
-                sixes: 1,
-                strkRate: "92.86",
-                name: "Ravindra Jadeja",
-                isCaptain: true,
-                outDec: "not out",
-              },
-              {
-                id: 11195,
-                balls: 6,
-                runs: 3,
-                strkRate: "50",
-                name: "Shivam Dube",
-                outDec: "c Narine b Russell",
-              },
-              {
-                id: 265,
-                balls: 38,
-                runs: 50,
-                fours: 7,
-                sixes: 1,
-                strkRate: "131.58",
-                name: "Dhoni",
-                isKeeper: true,
-                outDec: "not out",
-              },
-              {
-                id: 242,
-                strkRate: "0",
-                name: "DJ Bravo",
-              },
-              {
-                id: 10100,
-                strkRate: "0",
-                name: "Santner",
-              },
-              {
-                id: 7625,
-                strkRate: "0",
-                name: "Milne",
-              },
-              {
-                id: 11307,
-                strkRate: "0",
-                name: "Tushar Deshpande",
-              },
-            ],
-            bowler: [
-              {
-                id: 1858,
-                overs: "4",
-                wickets: 2,
-                runs: 20,
-                economy: "5",
-                name: "Umesh",
-              },
-              {
-                id: 12345,
-                overs: "4",
-                runs: 35,
-                economy: "8.8",
-                name: "Shivam Mavi",
-              },
-              {
-                id: 12926,
-                overs: "4",
-                wickets: 1,
-                runs: 23,
-                economy: "5.8",
-                name: "Chakaravarthy",
-              },
-              {
-                id: 2276,
-                overs: "4",
-                runs: 15,
-                economy: "3.8",
-                name: "Narine",
-              },
-              {
-                id: 7736,
-                overs: "4",
-                wickets: 1,
-                runs: 38,
-                economy: "9.5",
-                name: "Russell",
-              },
-            ],
-            fow: [
-              {
-                fow: [
-                  {
-                    batsmanId: 11813,
-                    batsmanName: "Ruturaj Gaikwad",
-                    overNbr: 0.3,
-                    runs: 2,
-                    ballNbr: 3,
-                  },
-                  {
-                    batsmanId: 9838,
-                    batsmanName: "Conway",
-                    overNbr: 4.1,
-                    runs: 28,
-                    ballNbr: 41,
-                  },
-                  {
-                    batsmanId: 527,
-                    batsmanName: "Uthappa",
-                    overNbr: 7.5,
-                    runs: 49,
-                    ballNbr: 75,
-                  },
-                  {
-                    batsmanId: 6311,
-                    batsmanName: "Rayudu",
-                    overNbr: 8.4,
-                    runs: 52,
-                    ballNbr: 84,
-                  },
-                  {
-                    batsmanId: 11195,
-                    batsmanName: "Shivam Dube",
-                    overNbr: 10.5,
-                    runs: 61,
-                    ballNbr: 105,
-                  },
-                ],
-              },
-            ],
-            extras: {
-              wides: 4,
-              noBalls: 2,
-              total: 6,
-            },
-            pp: [
-              {
-                powerPlay: [
-                  {
-                    id: 41,
-                    ovrFrom: 0.1,
-                    ovrTo: 6.0,
-                    ppType: "mandatory",
-                    run: 35,
-                  },
-                ],
-              },
-            ],
-            score: 131,
-            wickets: 5,
-            overs: 20.0,
-            runRate: 6.55,
-            batTeamName: "Chennai Super Kings",
-            batTeamSName: "CSK",
-            ballNbr: 120,
-            rpb: 0.66,
-          },
-          {
-            inningsId: 2,
-            batsman: [
-              {
-                id: 1447,
-                balls: 34,
-                runs: 44,
-                fours: 6,
-                sixes: 1,
-                strkRate: "129.41",
-                name: "Ajinkya Rahane",
-                nickName: "Rahane",
-                outDec: "c Ravindra Jadeja b Santner",
-              },
-              {
-                id: 10917,
-                balls: 16,
-                runs: 16,
-                fours: 2,
-                strkRate: "100",
-                name: "Venkatesh Iyer",
-                nickName: "Venkatesh Iyer",
-                outDec: "c Dhoni b DJ Bravo",
-              },
-              {
-                id: 9204,
-                balls: 17,
-                runs: 21,
-                fours: 2,
-                sixes: 1,
-                strkRate: "123.53",
-                name: "Nitish Rana",
-                nickName: "Nitish Rana",
-                outDec: "c Rayudu b DJ Bravo",
-              },
-              {
-                id: 9428,
-                balls: 19,
-                runs: 20,
-                fours: 1,
-                strkRate: "105.26",
-                name: "Shreyas Iyer",
-                nickName: "Shreyas Iyer",
-                isCaptain: true,
-                outDec: "not out",
-              },
-              {
-                id: 7990,
-                balls: 22,
-                runs: 25,
-                fours: 1,
-                sixes: 1,
-                strkRate: "113.64",
-                name: "Sam Billings",
-                nickName: "Billings",
-                outDec: "c Tushar Deshpande b DJ Bravo",
-              },
-              {
-                id: 8846,
-                balls: 3,
-                runs: 3,
-                strkRate: "100",
-                name: "Sheldon Jackson",
-                nickName: "Jackson",
-                isKeeper: true,
-                outDec: "not out",
-              },
-              {
-                id: 7736,
-                strkRate: "0",
-                name: "Andre Russell",
-                nickName: "Russell",
-              },
-              {
-                id: 2276,
-                strkRate: "0",
-                name: "Sunil Narine",
-                nickName: "Narine",
-              },
-              {
-                id: 1858,
-                strkRate: "0",
-                name: "Umesh Yadav",
-                nickName: "Umesh",
-              },
-              {
-                id: 12345,
-                strkRate: "0",
-                name: "Shivam Mavi",
-                nickName: "Shivam Mavi",
-              },
-              {
-                id: 12926,
-                strkRate: "0",
-                name: "Varun Chakaravarthy",
-                nickName: "Chakaravarthy",
-              },
-            ],
-            bowler: [
-              {
-                id: 11307,
-                overs: "3",
-                runs: 23,
-                economy: "7.7",
-                name: "Tushar Deshpande",
-                nickName: "Tushar Deshpande",
-              },
-              {
-                id: 7625,
-                overs: "2.3",
-                runs: 19,
-                economy: "7.6",
-                name: "Adam Milne",
-                nickName: "Milne",
-              },
-              {
-                id: 10100,
-                overs: "4",
-                wickets: 1,
-                runs: 31,
-                economy: "7.8",
-                name: "Mitchell Santner",
-                nickName: "Santner",
-              },
-              {
-                id: 242,
-                overs: "4",
-                wickets: 3,
-                runs: 20,
-                economy: "5",
-                name: "Dwayne Bravo",
-                nickName: "DJ Bravo",
-              },
-              {
-                id: 11195,
-                overs: "1",
-                runs: 11,
-                economy: "11",
-                name: "Shivam Dube",
-                nickName: "Shivam Dube",
-              },
-              {
-                id: 587,
-                overs: "4",
-                runs: 25,
-                economy: "6.2",
-                name: "Ravindra Jadeja",
-                nickName: "Ravindra Jadeja",
-                isCaptain: true,
-              },
-            ],
-            fow: [
-              {
-                fow: [
-                  {
-                    batsmanId: 10917,
-                    batsmanName: "Venkatesh Iyer",
-                    overNbr: 6.2,
-                    runs: 43,
-                    ballNbr: 62,
-                  },
-                  {
-                    batsmanId: 9204,
-                    batsmanName: "Nitish Rana",
-                    overNbr: 9.6,
-                    runs: 76,
-                    ballNbr: 96,
-                  },
-                  {
-                    batsmanId: 1447,
-                    batsmanName: "Ajinkya Rahane",
-                    overNbr: 11.4,
-                    runs: 87,
-                    ballNbr: 114,
-                  },
-                  {
-                    batsmanId: 7990,
-                    batsmanName: "Sam Billings",
-                    overNbr: 17.3,
-                    runs: 123,
-                    ballNbr: 173,
-                  },
-                ],
-              },
-            ],
-            extras: {
-              byes: 4,
-              total: 4,
-            },
-            pp: [
-              {
-                powerPlay: [
-                  {
-                    id: 42,
-                    ovrFrom: 0.1,
-                    ovrTo: 6.0,
-                    ppType: "mandatory",
-                    run: 43,
-                  },
-                ],
-              },
-            ],
-            score: 133,
-            wickets: 4,
-            overs: 18.3,
-            runRate: 7.19,
-            batTeamName: "Kolkata Knight Riders",
-            batTeamSName: "KKR",
-            ballNbr: 111,
-            rpb: 0.73,
-          },
-        ],
-        isMatchComplete: true,
-        appIndex: {
-          seoTitle:
-            "Cricket scorecard - CSK vs KKR 1st Match,Indian Premier League 2022 | Cricbuzz.com",
-          webURL:
-            "http://www.cricbuzz.com/live-cricket-scorecard/45886/csk-vs-kkr-1st-match-indian-premier-league-2022",
+      console.log("ShowLogs : " + this.showlogs);
+      if (this.showlogs) console.log("logs : " + this.matchID + this.mom);
+
+      const options = {
+        method: "GET",
+        url: "https://unofficial-cricbuzz.p.rapidapi.com/matches/get-scorecard",
+        params: { matchId: this.matchID },
+        headers: {
+          "X-RapidAPI-Host": "unofficial-cricbuzz.p.rapidapi.com",
+          "X-RapidAPI-Key":
+            "427451b511msh07056d18c6e0adcp1dae07jsn577cf6594d98",
         },
-        status: "Kolkata Knight Riders won by 6 wkts",
-        responseLastUpdated: "1648837358",
       };
 
-      // const options = {
-      //   method: "GET",
-      //   url: "https://unofficial-cricbuzz.p.rapidapi.com/matches/get-scorecard",
-      //   params: { matchId: this.matchID },
-      //   headers: {
-      //     "X-RapidAPI-Host": "unofficial-cricbuzz.p.rapidapi.com",
-      //     "X-RapidAPI-Key":
-      //       "427451b511msh07056d18c6e0adcp1dae07jsn577cf6594d98",
-      //   },
-      // };
-      // await axios
-      //   .request(options)
-      //   .then((response) => {
-      //     this.apiScore = response.data;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
-      // console.log("matchscore : " + this.apiScore);
-      // const match = this.apiScore.appIndex.seoTitle
-      //   .split(",")[0]
-      //   .split("-")[1]
-      //   .split(" ");
-      const matchNm = this.matchId + "_" + this.team1 + "vs" + this.team2;
+      if (this.useAPI) {
+        await axios
+          .request(options)
+          .then((response) => {
+            this.apiScore = response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        this.apiScore = matchScoreTestFile;
+      }
+
+      if (this.showlogs) {
+        console.log(this.apiScore);
+      }
+      console.log(scoreCard);
+      const matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
       // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
       console.log("matchNm : " + matchNm);
-      Object.entries(matchScore.scorecard).forEach((item) => {
+      /***
+       * Fetch scores of players & assign to playersScore map
+       */
+      Object.entries(this.apiScore.scoreCard).forEach((item) => {
         if (item.batsman !== null) {
           Object.entries(item[1].batsman).forEach((batsman) => {
             let playerScoreSubMap = new Map();
+            let plyrNm = batsman[1].name;
             playerScoreSubMap.set(
               this.switchValues.runs,
               this.getValidScore(batsman[1].runs)
@@ -566,32 +196,58 @@ export default {
               this.switchValues.fours,
               this.getValidScore(batsman[1].fours)
             );
-            this.playersScore.set(batsman[1].name, playerScoreSubMap);
-            if (batsman[1].nickName !== undefined) {
-              this.playersNickName.set(batsman[1].nickName, batsman[1].name);
+            this.playersScore.set(plyrNm, playerScoreSubMap);
+            let plyrNickNm = batsman[1].nickName;
+            if (plyrNickNm !== undefined) {
+              // playerScoreSubMap.set("nickName", plyrNickNm);
+              this.playersNickName.set(plyrNickNm, plyrNm);
+              this.playersNickNameAsValue.set(plyrNm, plyrNickNm);
             }
+            if (this.showlogs)
+              console.log("Out Desc : " + plyrNm + " - " + batsman[1].outDec);
             this.addOutDescrition(batsman[1].outDec);
           });
         } else {
           console.log("In Else" + item);
         }
       });
+      if (this.showlogs) {
+        console.log("Bowling Map : " + [...this.playersBowling.entries()]);
+      }
       this.adjustNameNAssignToPlayerScore(
         this.playersBowling,
         this.switchValues.Bowling
       );
+      if (this.showlogs) {
+        console.log(
+          "CatchStumpMap : " + [...this.playersCatchingStumping.entries()]
+        );
+      }
       this.adjustNameNAssignToPlayerScore(
         this.playersCatchingStumping,
         this.switchValues.CatchingStumping
       );
+      if (this.showlogs) {
+        console.log("RunOutsMap : " + [...this.playersRunOuts.entries()]);
+      }
       this.adjustNameNAssignToPlayerScore(
         this.playersRunOuts,
         this.switchValues.RunOuts
       );
+      if (this.showlogs) {
+        console.log(
+          "BowledLbwMap : " + [...this.playersBowlingBowledLbw.entries()]
+        );
+      }
       this.adjustNameNAssignToPlayerScore(
         this.playersBowlingBowledLbw,
         this.switchValues.BowledLbw
       );
+      if (this.showlogs) {
+        console.log(
+          "playersSubstituteMap : " + [...this.playersSubstitute.entries()]
+        );
+      }
       this.adjustNameNAssignToPlayerScore(
         this.playersSubstitute,
         this.switchValues.BowledLbw
@@ -617,75 +273,152 @@ export default {
           playerScoreValues.set(this.switchValues.Substitute, "Y");
         }
       });
-
-      this.playersScore.forEach((values, keys) => {
+      // this.playersScore.forEach((values, keys) => {
+      for (let [key, value] of this.playersScore) {
         let subMap = new Map();
-        subMap = values;
-        if (keys == this.mom) {
-          values.set(this.switchValues.mom, "Y");
+        subMap = value;
+        if (key == this.mom) {
+          value.set(this.switchValues.mom, "Y");
         } else {
-          values.set(this.switchValues.mom, "N");
+          value.set(this.switchValues.mom, "N");
         }
-        values.set("1total", this.claculateTotal(subMap));
-        const conMap = Object.fromEntries(values);
-        // console.log([...[values].entries()]);
-        // this.assignToDB(matchNm, 0, keys, conMap);
-        // console.log("Player : " + keys);
-        // console.log(conMap);
-      });
-
-      const docRef = doc(db, "Owners", "teams");
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const ownerTeamsMap = new Map(Object.entries(docSnap.data()));
-        console.log(ownerTeamsMap);
-        ownerTeamsMap.forEach((values, keys) => {
-          //key : OwnerNames values : team players
-          let matchTotalPoints = 0;
-          const ownerPlayersArr = values;
-          const ownerName = keys;
-          ownerPlayersArr.forEach(
-            (
-              element //element owner team each player
-            ) =>
-              this.playersScore.forEach((values, keys) => {
-                // keys : match played players & values :their scores
-                let playerPoints = new Map();
-                playerPoints = values;
-                console.log("Player : " + keys);
-                console.log("Total : " + [...[values].entries()]);
-                console.log(playerPoints);
-                matchTotalPoints =
-                  matchTotalPoints + playerPoints.get("1total");
-                if (element == keys) {
-                  // this.assignToDB(
-                  //   ownerName,
-                  //   matchNm,
-                  //   matchTotalPoints,
-                  //   keys,
-                  //   playerScoreValues
-                  // );
-                  console.log(
-                    ownerName +
-                      ": " +
-                      "matchNm" +
-                      ": " +
-                      matchTotalPoints +
-                      ": " +
-                      keys +
-                      ": " +
-                      playerPoints
-                  );
-                }
-              })
+        value.set("1total", this.claculateTotal(subMap));
+        const conMap = Object.fromEntries(value);
+        // console.log([...[value].entries()]);
+        matchScoreTotalPoints = matchScoreTotalPoints + value.get("1total");
+        /**
+         * DB write MatchScores
+         * Doc : MatchScores
+         */
+        if (this.writeToDB) {
+          await this.assignToDB(
+            "MatchScores",
+            matchNm,
+            matchScoreTotalPoints,
+            key,
+            conMap,
+            false
           );
-        });
-        // console.log("Names:" + ownerTeamsMap.get("Names"));
-      } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
+        }
+        if (this.showlogs) {
+          console.log("Player : " + key);
+          console.log(conMap);
+        }
+      }
+      /**
+       * DB write MoM to MatchScores
+       * Doc : MatchScores
+       */
+      if (this.writeToDB) {
+        const matchScoresdocRef = doc(db, "Owners", "MatchScores");
+        await setDoc(
+          matchScoresdocRef,
+          {
+            [matchNm]: { "0MoM": this.mom },
+          },
+          { merge: true }
+        );
+      }
+
+      const docRef = collection(db, "Owners");
+      const docSnaps = await getDocs(docRef);
+      let ownerDocsMap = new Map();
+      docSnaps.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
+      let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
+      let matchTotalPoints = 0;
+      ownerTeamsMap.delete("Names");
+      // ownerTeamsMap.forEach((values, keys) => {
+      for (let [keys, values] of ownerTeamsMap) {
+        //key : OwnerNames values : team players
+        let ownerPlayersArr = values;
+        let ownerName = keys;
+        if (this.showlogs) {
+          console.log("Owner Name 1 : " + ownerName);
+          console.log(ownerPlayersArr);
+        }
+        let ownerTeamsTotalPoints = new Map(
+          Object.entries(ownerDocsMap.get(ownerName))
+        );
+        /**
+         * DB write 1Total to match name of Owner Name
+         * Doc : ownerName
+         */
+        // await this.assignToDB(ownerName, matchNm, 0, NaN, NaN, true);
+        ownerMatchTotalPoints.set(ownerName, 0);
+        ownerTotalPoints.set(ownerName, ownerTeamsTotalPoints.get("1total"));
+        for (let i = 0; i < ownerPlayersArr.length; i++) {
+          const element = ownerPlayersArr[i];
+          for (let [keys, values] of this.playersScore) {
+            // keys : match played players & values :their scores
+            let playerPoints = new Map();
+            playerPoints = values;
+            let playerTotalPoints = playerPoints.get("1total");
+            if (
+              this.playersNickNameAsValue.has(element) &&
+              this.playersNickNameAsValue.get(element) == keys
+            ) {
+              if (element !== keys) {
+                element == this.playersNickNameAsValue.get(element);
+                console.log(
+                  "Nick Name " +
+                    element +
+                    " as Player Name of Owner" +
+                    ownerName
+                );
+              }
+            }
+            if (element == keys) {
+              let ownerMatchPoints = ownerMatchTotalPoints.get(ownerName);
+              let player1TotalPoints = playerPoints.get("1total");
+              let newPoints = ownerMatchPoints + player1TotalPoints;
+              ownerMatchTotalPoints.set(ownerName, newPoints);
+              let ownerNewPoints = ownerMatchTotalPoints.get(ownerName);
+              let playerPointsMap = Object.fromEntries(playerPoints);
+              /**
+               * DB write player score to Owner Name
+               * Doc : ownerName
+               */
+              if (this.writeToDB) {
+                await this.assignToDB(
+                  ownerName,
+                  matchNm,
+                  ownerNewPoints,
+                  keys,
+                  playerPointsMap,
+                  false
+                );
+              }
+              if (this.showlogs) {
+                console.log(
+                  ownerName +
+                    " | " +
+                    keys +
+                    " | " +
+                    playerPoints.get("1total") +
+                    " | " +
+                    ownerNewPoints
+                );
+                console.log(playerPoints);
+              }
+            }
+          }
+        }
+      }
+      if (this.showlogs) console.log(ownerMatchTotalPoints);
+      /**
+       * DB write overall 1Total Owner Name
+       * Doc : ownerName
+       */
+      if (this.writeToDB) {
+        for (let [key, value] of ownerMatchTotalPoints) {
+          const docRef = doc(db, "Owners", key);
+          await updateDoc(docRef, {
+            "1total": value + ownerTotalPoints.get(key),
+          });
+        }
       }
     },
+
     claculateTotal(scoreMap) {
       let battingPoints = 0;
       let bowlingPoints = 0;
@@ -719,18 +452,38 @@ export default {
       // console.log("totalPoints : " + totalPoints);
       return totalPoints;
     },
-    assignToDB(document, matchNm, totalPoints, k, v) {
+    createFieldInDb(document, matchNm) {
       const docRef = doc(db, "Owners", document);
-      this.obj = v;
-      setDoc(
-        docRef,
-        {
-          [matchNm]: { "1total": totalPoints, [k]: this.obj },
-        },
-        { merge: true }
-      ).catch((err) => {
+      updateDoc(docRef, {
+        [matchNm]: { "1total": 0 },
+      }).catch((err) => {
         console.log("error: " + err.message);
       });
+    },
+    assignToDB(document, matchNm, totalPoints, k, v, createTotalOnlyFlag) {
+      const docRef = doc(db, "Owners", document);
+      this.obj = v;
+      if (createTotalOnlyFlag == true) {
+        return setDoc(
+          docRef,
+          {
+            [matchNm]: { "1total": totalPoints },
+          },
+          { merge: true }
+        ).catch((err) => {
+          console.log("error: " + err.message);
+        });
+      } else {
+        return setDoc(
+          docRef,
+          {
+            [matchNm]: { "1total": totalPoints, [k]: this.obj },
+          },
+          { merge: true }
+        ).catch((err) => {
+          console.log("error: " + err.message);
+        });
+      }
     },
     getValidScore(value) {
       return value == undefined ? 0 : value;
