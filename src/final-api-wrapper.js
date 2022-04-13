@@ -8,47 +8,38 @@ import {
     getDocs,
   } from "firebase/firestore";
 
-export async function getOwnerNames() {
-    const DOC_REFERENCE = collection(db, "Owners");
-    const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
-    
-    let ownerDocsMap = new Map();
-    DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
-
-    let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
-    return ownerTeamsMap.get("Names");
-}
+let matchWisePoints = new Map();
 
 export async function getTeamWiseTotalPoints() {
     const DOC_REFERENCE = collection(db, "Owners");
     const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
-    
+
     let ownerDocsMap = new Map();
     DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
 
     let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
-    
+
     let owners = ownerTeamsMap.get("Names");
     let teamWiseTotalPoints = []
+
     for (let i = 0; i < owners.length; i++) {
         let ownerName = owners[i]
         const matchScoresdocRef = doc(db, "Owners", ownerName);
-        
+
         let ownerMatchScoresMap = new Map();
         ownerMatchScoresMap = new Map(
             Object.entries((await getDoc(matchScoresdocRef)).data())
         );
-        
+
         let totalPoints = ownerMatchScoresMap.get("1total");
-        let teamScore = { name: ownerName, totalPoints: totalPoints}
+        let teamScore = { no: i+1, name: ownerName, totalPoints: totalPoints}
         teamWiseTotalPoints.push(teamScore)
     }
 
     return teamWiseTotalPoints
 }
 
-export async function getFullData() {
-
+export async function fetchTeamWiseTotalPoints() {
     const docRef = collection(db, "Owners");
     const docSnaps = await getDocs(docRef);
     let ownerDocsMap = new Map();
@@ -67,12 +58,29 @@ export async function getFullData() {
         Object.entries((await getDoc(matchScoresdocRef)).data())
       );
       
-      let totalPoints = ownerMatchScoresMap.get("1total");
       ownerMatchScoresMap.delete("1total");
+      matchWisePoints.set(owner, [])
+
       for (let [match, value] of ownerMatchScoresMap) {
         let matchScoresMap = new Map(Object.entries(value));
-        console.log("..." + match + " : " + matchScoresMap.get("1total"));
+        let matchInfo = match.split("_")
+        let matchId = matchInfo[0]
+        let matchVs = matchInfo[1]
+        let teamTotalPoints = matchScoresMap.get("1total")
+        
+        let matchWiseTeamPoints = {
+          matchId: matchId,
+          matchVs: matchVs,
+          points: teamTotalPoints
+        }
+
+        matchWisePoints.get(owner).push(matchWiseTeamPoints)
       }
-      console.log("..Total : " + totalPoints);
     }
+}
+
+export function getMatchWisePoints(teamName) {
+  console.log(`Get match wise points for team ${teamName}`)
+  let points  = matchWisePoints.get(teamName)
+  return points
 }

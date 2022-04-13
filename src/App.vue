@@ -1,8 +1,8 @@
 <template>
   <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/detailedScoreCard">Detail Scorecard</router-link> |
-    <router-link to="/introduceScore">Introduce Score</router-link>
+    <router-link to="/">Home</router-link> | 
+    <router-link to="/detailedScoreCard">Detail Scores</router-link> | 
+    <router-link to="/introduceScore">Update</router-link>
   </nav>
   <router-view/>
 </template>
