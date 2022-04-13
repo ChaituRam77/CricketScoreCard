@@ -126,7 +126,7 @@ export default {
     validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
-        this.useAPI = true;
+        this.useAPI = false;
         this.writeToDB = false;
         this.introduceMatchScore();
       } else {
@@ -135,7 +135,7 @@ export default {
     },
     async introduceMatchScore() {
       let scorecard = new Map();
-      let matchScore = require("../data/test.json");
+      let matchScoreTestFile = require("../data/test.json");
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
@@ -167,7 +167,7 @@ export default {
             console.log(error);
           });
       } else {
-        this.apiScore = matchScoreTestFile.scorecard;
+        scorecard = matchScoreTestFile.scorecard;
       }
       console.log(this.apiScore);
       if (this.showlogs) {
@@ -213,6 +213,7 @@ export default {
         }
       });
       if (this.showlogs) {
+        console.log("NickNames Map : " + [...this.playersNickName.entries()]);
         console.log("Bowling Map : " + [...this.playersBowling.entries()]);
       }
       this.adjustNameNAssignToPlayerScore(
@@ -503,55 +504,60 @@ export default {
        */
 
       if (outDesc !== undefined && outDesc !== "not out") {
-        const od = "" + outDesc;
+        let od = "" + outDesc;
+        od = od.trim();
         if (od.indexOf(" b ") !== -1 && od.substring(0, 2) == "c ") {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
-          // console.log("bowler : " + bowler);
+          if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
           const catcher = od.substring(2, od.indexOf(" b "));
-          // console.log("catcher : " + catcher);
+          if (this.showlogs) console.log("catcher : " + catcher);
           this.increamentMapValue(this.playersCatchingStumping, catcher, "N");
         }
         if (od.substring(0, 7) == "c and b") {
           const player = od.substring(od.indexOf(" b ") + 3, od.length);
-          // console.log("c&B player : " + player);
+          if (this.showlogs) console.log("c&B player : " + player);
           this.increamentMapValue(this.playersBowling, player, "N");
           this.increamentMapValue(this.playersCatchingStumping, player, "N");
         }
         if (od.substring(0, 2) == "b ") {
           const bowler = od.substring(od.indexOf("b ") + 2, od.length);
-          // console.log("playersBowlingBowled : " + bowler);
+          if (this.showlogs) console.log("playersBowlingBowled : " + bowler);
           this.increamentMapValue(this.playersBowlingBowledLbw, bowler, "N");
+          if (this.showlogs) console.log("bowler : " + bowler);
+          this.increamentMapValue(this.playersBowling, bowler, "N");
         }
         if (od.substring(0, 3) == "lbw ") {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
-          // console.log("playersBowlingLbw : " + bowler);
+          if (this.showlogs) console.log("playersBowlingLbw : " + bowler);
           this.increamentMapValue(this.playersBowlingBowledLbw, bowler, "N");
+          if (this.showlogs) console.log("bowler : " + bowler);
+          this.increamentMapValue(this.playersBowling, bowler, "N");
         }
         if (od.substring(0, 3) == "st ") {
           const keeper = od.substring(3, od.indexOf(" b"));
-          // console.log("keeper : " + keeper);
+          if (this.showlogs) console.log("keeper : " + keeper);
           this.increamentMapValue(this.playersCatchingStumping, keeper, "N");
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
-          // console.log("bowler : " + bowler);
+          if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
         }
         if (od.indexOf("hit wicket") !== -1) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
-          // console.log("hit wicket bowler : " + bowler);
+          if (this.showlogs) console.log("hit wicket bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
         }
         if (od.indexOf("run out") !== -1) {
           if (od.indexOf("/") !== -1) {
             const thrower1 = od.substring(od.indexOf("(") + 1, od.indexOf("/"));
-            // console.log("thrower1 : " + thrower1);
+            if (this.showlogs) console.log("thrower1 : " + thrower1);
             this.increamentMapValue(this.playersRunOuts, thrower1, "Y");
             const thrower2 = od.substring(od.indexOf("/") + 1, od.indexOf(")"));
-            // console.log("thrower2 : " + thrower2);
+            if (this.showlogs) console.log("thrower2 : " + thrower2);
             this.increamentMapValue(this.playersRunOuts, thrower2, "Y");
           } else {
             const thrower = od.substring(od.indexOf("(") + 1, od.length - 1);
-            // console.log("thrower : " + thrower);
+            if (this.showlogs) console.log("thrower : " + thrower);
             this.increamentMapValue(this.playersRunOuts, thrower, "N");
           }
         }
