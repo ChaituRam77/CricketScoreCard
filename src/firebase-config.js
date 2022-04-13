@@ -17,3 +17,7 @@ initializeApp(firebaseConfig);
 const db = getFirestore()
 const ownersCollection =  collection(db,'Owners')
 export default db;
+
+export function m1() {
+  console.log('Hello')
+}

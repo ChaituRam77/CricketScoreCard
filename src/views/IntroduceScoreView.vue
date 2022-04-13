@@ -134,7 +134,7 @@ export default {
       }
     },
     async introduceMatchScore() {
-      let scoreCard = new Map();
+      let scorecard = new Map();
       let matchScore = require("../data/test.json");
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
@@ -161,25 +161,26 @@ export default {
           .request(options)
           .then((response) => {
             this.apiScore = response.data;
+            scorecard = this.apiScore.scorecard;
           })
           .catch((error) => {
             console.log(error);
           });
       } else {
-        this.apiScore = matchScoreTestFile;
+        this.apiScore = matchScoreTestFile.scorecard;
       }
-
+      console.log(this.apiScore);
       if (this.showlogs) {
-        console.log(this.apiScore);
+        console.log(scorecard);
       }
-      console.log(scoreCard);
+      console.log(scorecard);
       const matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
       // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
       console.log("matchNm : " + matchNm);
       /***
        * Fetch scores of players & assign to playersScore map
        */
-      Object.entries(this.apiScore.scoreCard).forEach((item) => {
+      Object.entries(scorecard).forEach((item) => {
         if (item.batsman !== null) {
           Object.entries(item[1].batsman).forEach((batsman) => {
             let playerScoreSubMap = new Map();
