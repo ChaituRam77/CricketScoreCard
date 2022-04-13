@@ -1,24 +1,21 @@
 import { computed } from '@vue/runtime-core'
 
 <template>
-  <div class="text-center">
-    <h1>Scores</h1>
-    <div id="score-table" align="center">
-      <table>
-        <thead>
-          <tr>
-            <th class="text-h5">Team</th>
-            <th class="text-h5">Points</th>
-          </tr>
-        </thead>
-        <tbody class="team" v-for="team in teamWiseTotalPoints" :key="team">
-          <tr>
-            <td>{{ team.name }}</td>
-            <td>{{ team.totalPoints }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="container">
+    <table class="table table-borderless table-striped table-sm">
+      <thead>
+        <tr class="bg-dark text-white">
+          <th scope="col">Team</th>
+          <th scope="col">Points</th>
+        </tr>
+      </thead>
+      <tbody class="team" v-for="team in teamWiseTotalPoints" :key="team">
+        <tr>
+          <td><p>{{ team.name }}</p></td>
+          <td><p>{{ team.totalPoints }}</p></td>
+        </tr>
+      </tbody>
+  </table>
   </div>
 </template>
 
