@@ -126,7 +126,7 @@ export default {
   methods: {
     validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
-        this.showlogs = true;
+        this.showlogs = false;
         this.useAPI = true;
         this.writeToDB = true;
         this.introduceMatchScore();
@@ -356,7 +356,7 @@ export default {
          * DB write 1Total to match name of Owner Name
          * Doc : ownerName
          */
-        // await this.assignToDB(ownerName, matchNm, 0, NaN, NaN, true);
+        await this.assignToDB(ownerName, matchNm, 0, NaN, NaN, true);
         ownerMatchTotalPoints.set(ownerName, 0);
         ownerTotalPoints.set(ownerName, ownerTeamsTotalPoints.get("1total"));
         for (let i = 0; i < ownerPlayersArr.length; i++) {
