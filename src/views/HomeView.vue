@@ -36,12 +36,22 @@ export default {
       let ownerDocsMap = new Map();
       docSnaps.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
       let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
-      let matchTotalPoints = 0;
       let ownersArr = ownerTeamsMap.get("Names");
-      // ownerTeamsMap.forEach((values, keys) => {
       for (let i = 0; i < ownersArr.length; i++) {
+        let ownerMatchScoresMap = new Map();
         const owner = ownersArr[i];
-        console.log(owner);
+        console.log("owner : " + owner);
+        const matchScoresdocRef = doc(db, "Owners", owner);
+        ownerMatchScoresMap = new Map(
+          Object.entries((await getDoc(matchScoresdocRef)).data())
+        );
+        let totalPoints = ownerMatchScoresMap.get("1total");
+        ownerMatchScoresMap.delete("1total");
+        for (let [match, value] of ownerMatchScoresMap) {
+          let matchScoresMap = new Map(Object.entries(value));
+          console.log("..." + match + " : " + matchScoresMap.get("1total"));
+        }
+        console.log("..Total : " + totalPoints);
       }
     },
   },
