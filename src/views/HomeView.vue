@@ -39,7 +39,6 @@ import { computed } from '@vue/runtime-core'
   </div>
   <br />
   <br />
-  <br />
   <h4>{{ greeting }}</h4>
   <br />
   <div
