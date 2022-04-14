@@ -6,6 +6,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  getDoc,
   addDoc,
   setDoc,
 } from "firebase/firestore";
@@ -38,10 +39,19 @@ export async function deleteOwnerDocs() {
     const ownerScoresdocRef = doc(db, "Owners", ownerName);
     await deleteDoc(ownerScoresdocRef);
     console.log("Deleted");
-    setDoc(ownerScoresdocRef, {
+    await setDoc(ownerScoresdocRef, {
       "1total": 0,
     }).catch((err) => {
       console.log(err.message);
     });
   }
+}
+
+export async function getDataFromDoc(docNm, fieldNm) {
+  const DOC_REFERENCE = collection(db, "Owners");
+  const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
+  let ownerDocsMap = new Map();
+  DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
+  let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get(docNm)));
+  return ownerTeamsMap.get(fieldNm);
 }

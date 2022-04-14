@@ -78,7 +78,7 @@
 
 <script>
 import db from "../firebase-config";
-import { deleteOwnerDocs } from "../firebase-config";
+import { deleteOwnerDocs, getDataFromDoc } from "../firebase-config";
 import {
   collection,
   getDoc,
@@ -126,9 +126,9 @@ export default {
   methods: {
     validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
-        this.showlogs = false;
+        this.showlogs = true;
         this.useAPI = true;
-        this.writeToDB = true;
+        this.writeToDB = false;
         this.introduceMatchScore();
       } else {
         alert("Invalid Secret Key");
@@ -137,6 +137,7 @@ export default {
     async introduceMatchScore() {
       let scorecard = new Map();
       let matchScoreJSON = require("../data/test.json");
+      // matchScoreJSON = getDataFromDoc("ApiScoreCard", "45896_PBKSvsRCB");
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
