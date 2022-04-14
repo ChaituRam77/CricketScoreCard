@@ -38,7 +38,6 @@ import { computed } from '@vue/runtime-core'
     </table>
   </div>
   <br />
-  <br />
   <div
     class="container well"
     v-if="matchWisePoints.length == 0 && teamWiseTotalPoints.length == 0"
@@ -47,7 +46,7 @@ import { computed } from '@vue/runtime-core'
     class="container well"
     v-else-if="matchWisePoints.length == 0 && teamWiseTotalPoints.length > 0"
   >
-    <h4>Click team name to view match-wise</h4>
+    <h4><i>Click team name to view match-wise 👆</i></h4>
   </div>
   <div class="container well" v-else>
     <h4>{{ greeting }}</h4>
