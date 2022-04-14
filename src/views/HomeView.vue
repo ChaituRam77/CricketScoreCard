@@ -2,6 +2,12 @@ import { computed } from '@vue/runtime-core'
 
 <template>
   <div v-if="teamWiseTotalPoints.length == 0">
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
     <div
       class="spinner-border"
       style="width: 3rem; height: 3rem"
@@ -11,7 +17,7 @@ import { computed } from '@vue/runtime-core'
   <div class="container well" v-else>
     <table class="table table-borderless table-sm table-hover" id="scoresTable">
       <thead>
-        <tr class="bg-dark text-white">
+        <tr class="bg-secondary bg-gradient text-white">
           <th scope="col">#</th>
           <th scope="col">Team</th>
           <th scope="col">Points</th>
@@ -31,8 +37,12 @@ import { computed } from '@vue/runtime-core'
       </tbody>
     </table>
   </div>
-
+  <br />
+  <br />
+  <br />
   <h4>{{ greeting }}</h4>
+  <br />
+  <br />
   <br />
   <div
     class="container well"
@@ -50,7 +60,7 @@ import { computed } from '@vue/runtime-core'
       id="matchWiseScoresTable"
     >
       <thead>
-        <tr class="bg-info text-white">
+        <tr class="bg-primary bg-gradient text-white">
           <th scope="col">#</th>
           <th scope="col">Match</th>
           <th scope="col">Points</th>
