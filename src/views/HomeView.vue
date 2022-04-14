@@ -49,7 +49,7 @@ import { computed } from '@vue/runtime-core'
     class="container well"
     v-else-if="matchWisePoints.length == 0 && teamWiseTotalPoints.length > 0"
   >
-    <h4>Click on a team</h4>
+    <h4>Click team name to view match-wise points</h4>
   </div>
   <div class="container well" v-else>
     <table
