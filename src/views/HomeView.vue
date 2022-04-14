@@ -42,8 +42,6 @@ import { computed } from '@vue/runtime-core'
   <br />
   <h4>{{ greeting }}</h4>
   <br />
-  <br />
-  <br />
   <div
     class="container well"
     v-if="matchWisePoints.length == 0 && teamWiseTotalPoints.length == 0"
