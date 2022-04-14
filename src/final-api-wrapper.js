@@ -66,14 +66,14 @@ export async function fetchTeamWiseTotalPoints() {
       let matchInfo = match.split("_");
       let matchId = matchInfo[0];
       let matchVs = matchInfo[1];
+      let matchNo = (matchId - 45881) / 5;
       let teamTotalPoints = matchScoresMap.get("1total");
-
       let matchWiseTeamPoints = {
         matchId: matchId,
         matchVs: matchVs,
+        matchNo: matchNo,
         points: teamTotalPoints,
       };
-
       matchWisePoints.get(owner).push(matchWiseTeamPoints);
     }
   }
