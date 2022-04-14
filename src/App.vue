@@ -1,7 +1,7 @@
 <template>
   <h1 class='fs-3 app-title'><strong>IPL 2022 Points Table</strong></h1>
   <nav>
-    <router-link to="/">Home</router-link> &nbsp;&nbsp;
+    <router-link to="/">Standings</router-link> &nbsp;&nbsp;
     <router-link to="/detailedScoreCard">Playerwise Scores</router-link> &nbsp;&nbsp;&nbsp;
     <router-link to="/introduceScore"><i class="bi bi-three-dots-vertical"></i></router-link>
   </nav>
