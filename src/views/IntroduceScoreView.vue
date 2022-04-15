@@ -77,8 +77,8 @@
 </template>
 
 <script>
-import db from "../firebase-config";
-import { deleteOwnerDocs, getDataFromDoc } from "../firebase-config";
+import db, { deleteOwnerDocs } from "../firebase-config";
+import { getDataFromDoc, deleteMatchScoreOfOwners } from "../firebase-config";
 import {
   collection,
   getDoc,
@@ -93,6 +93,7 @@ export default {
   data() {
     return {
       matchID: null,
+      matchNm: null,
       team1: null,
       team2: null,
       mom: null,
@@ -124,20 +125,35 @@ export default {
     };
   },
   methods: {
-    validsecretkeyAndProceed() {
+    async validsecretkeyAndProceed() {
+      deleteOwnerDocs();
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
         this.useAPI = true;
-        this.writeToDB = false;
+        this.writeToDB = true;
+        this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
+        console.log("this.matchNm : " + this.matchNm);
+        let matchExistsInDB = await getDataFromDoc(
+          "ApiScoreCard",
+          this.matchNm
+        );
+        if (this.writeToDB && matchExistsInDB !== undefined) {
+          alert("Match ID already introduced!!!");
+          return undefined;
+        }
         this.introduceMatchScore();
       } else {
         alert("Invalid Secret Key");
+        return undefined;
       }
     },
     async introduceMatchScore() {
       let scorecard = new Map();
       let matchScoreJSON = require("../data/test.json");
-      // matchScoreJSON = getDataFromDoc("ApiScoreCard", "45896_PBKSvsRCB");
+      // let matchScoreJSON = await getDataFromDoc(
+      //   "ApiScoreCard",
+      //   ""
+      // );
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
@@ -169,6 +185,7 @@ export default {
             console.log(error);
           });
       } else {
+        this.apiScore = matchScoreJSON;
         scorecard = matchScoreJSON.scorecard;
       }
       console.log(this.apiScore);
@@ -176,13 +193,14 @@ export default {
         console.log(scorecard);
       }
       console.log(scorecard);
-      const matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
       // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
-      console.log("matchNm : " + matchNm);
       /***
        * Fetch scores of players & assign to playersScore map
        */
+      let m = 1;
       Object.entries(scorecard).forEach((item) => {
+        console.log("Innings : " + m + "....................");
+        m++;
         if (item.batsman !== null) {
           Object.entries(item[1].batsman).forEach((batsman) => {
             let playerScoreSubMap = new Map();
@@ -297,7 +315,7 @@ export default {
         if (this.writeToDB) {
           await this.assignToDB(
             "MatchScores",
-            matchNm,
+            this.matchNm,
             matchScoreTotalPoints,
             key,
             conMap,
@@ -307,7 +325,7 @@ export default {
           await setDoc(
             matchScoreApidocRef,
             {
-              [matchNm]: this.apiScore,
+              [this.matchNm]: this.apiScore,
             },
             { merge: true }
           ).catch((err) => {
@@ -328,7 +346,7 @@ export default {
         await setDoc(
           matchScoresdocRef,
           {
-            [matchNm]: { "0MoM": this.mom },
+            [this.matchNm]: { "0MoM": this.mom },
           },
           { merge: true }
         );
@@ -357,7 +375,9 @@ export default {
          * DB write 1Total to match name of Owner Name
          * Doc : ownerName
          */
-        await this.assignToDB(ownerName, matchNm, 0, NaN, NaN, true);
+        if (this.writeToDB) {
+          await this.assignToDB(ownerName, this.matchNm, 0, NaN, NaN, true);
+        }
         ownerMatchTotalPoints.set(ownerName, 0);
         ownerTotalPoints.set(ownerName, ownerTeamsTotalPoints.get("1total"));
         for (let i = 0; i < ownerPlayersArr.length; i++) {
@@ -395,7 +415,7 @@ export default {
               if (this.writeToDB) {
                 await this.assignToDB(
                   ownerName,
-                  matchNm,
+                  this.matchNm,
                   ownerNewPoints,
                   keys,
                   playerPointsMap,
@@ -431,6 +451,7 @@ export default {
           });
         }
       }
+      alert("Updated successfully");
     },
 
     claculateTotal(scoreMap) {
@@ -466,19 +487,26 @@ export default {
       // console.log("totalPoints : " + totalPoints);
       return totalPoints;
     },
-    createFieldInDb(document, matchNm) {
+    async createFieldInDb(document, matchNm) {
       const docRef = doc(db, "Owners", document);
-      updateDoc(docRef, {
+      await updateDoc(docRef, {
         [matchNm]: { "1total": 0 },
       }).catch((err) => {
         console.log("error: " + err.message);
       });
     },
-    assignToDB(document, matchNm, totalPoints, k, v, createTotalOnlyFlag) {
+    async assignToDB(
+      document,
+      matchNm,
+      totalPoints,
+      k,
+      v,
+      createTotalOnlyFlag
+    ) {
       const docRef = doc(db, "Owners", document);
       this.obj = v;
       if (createTotalOnlyFlag == true) {
-        return setDoc(
+        return await setDoc(
           docRef,
           {
             [matchNm]: { "1total": totalPoints },
@@ -488,7 +516,7 @@ export default {
           console.log("error: " + err.message);
         });
       } else {
-        return setDoc(
+        return await setDoc(
           docRef,
           {
             [matchNm]: { "1total": totalPoints, [k]: this.obj },
@@ -517,6 +545,7 @@ export default {
 
       if (outDesc !== undefined && outDesc !== "not out") {
         let od = "" + outDesc;
+        let outDescValidation = 0;
         od = od.trim();
         if (od.indexOf(" b ") !== -1 && od.substring(0, 2) == "c ") {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
@@ -525,12 +554,14 @@ export default {
           const catcher = od.substring(2, od.indexOf(" b "));
           if (this.showlogs) console.log("catcher : " + catcher);
           this.increamentMapValue(this.playersCatchingStumping, catcher, "N");
+          outDescValidation++;
         }
-        if (od.substring(0, 7) == "c and b") {
+        if (od.includes("c and b")) {
           const player = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("c&B player : " + player);
           this.increamentMapValue(this.playersBowling, player, "N");
           this.increamentMapValue(this.playersCatchingStumping, player, "N");
+          outDescValidation++;
         }
         if (od.substring(0, 2) == "b ") {
           const bowler = od.substring(od.indexOf("b ") + 2, od.length);
@@ -538,41 +569,56 @@ export default {
           this.increamentMapValue(this.playersBowlingBowledLbw, bowler, "N");
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
+          outDescValidation++;
         }
-        if (od.substring(0, 3) == "lbw ") {
+        if (od.includes("lbw ")) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("playersBowlingLbw : " + bowler);
           this.increamentMapValue(this.playersBowlingBowledLbw, bowler, "N");
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
+          outDescValidation++;
         }
-        if (od.substring(0, 3) == "st ") {
+        if (od.includes("st ")) {
           const keeper = od.substring(3, od.indexOf(" b"));
           if (this.showlogs) console.log("keeper : " + keeper);
           this.increamentMapValue(this.playersCatchingStumping, keeper, "N");
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
+          outDescValidation++;
         }
-        if (od.indexOf("hit wicket") !== -1) {
+        if (od.includes("hit wicket")) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("hit wicket bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
+          outDescValidation++;
         }
-        if (od.indexOf("run out") !== -1) {
-          if (od.indexOf("/") !== -1) {
+        if (od.includes("run out")) {
+          if (od.includes("/")) {
             const thrower1 = od.substring(od.indexOf("(") + 1, od.indexOf("/"));
             if (this.showlogs) console.log("thrower1 : " + thrower1);
             this.increamentMapValue(this.playersRunOuts, thrower1, "Y");
             const thrower2 = od.substring(od.indexOf("/") + 1, od.indexOf(")"));
             if (this.showlogs) console.log("thrower2 : " + thrower2);
             this.increamentMapValue(this.playersRunOuts, thrower2, "Y");
+            outDescValidation++;
           } else {
             const thrower = od.substring(od.indexOf("(") + 1, od.length - 1);
             if (this.showlogs) console.log("thrower : " + thrower);
             this.increamentMapValue(this.playersRunOuts, thrower, "N");
+            outDescValidation++;
           }
         }
+        if (outDescValidation == 0 || outDescValidation > 1) {
+          alert(
+            "Out Description" +
+              batsman[1].outDec +
+              " not handled! DB updated exited"
+          );
+          return false;
+        }
+        return true;
       }
     },
     increamentMapValue(m, key, runoutFlag) {
@@ -617,7 +663,7 @@ export default {
             playerScoreSubMap.set(this.switchValues.CatchingStumping, values);
             break;
           case this.switchValues.RunOuts:
-            // console.log("inside runouts");
+            console.log("inside runouts : " + values);
             playerScoreSubMap.set(this.switchValues.RunOuts, values);
             break;
           case this.switchValues.Substitute:

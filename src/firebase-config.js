@@ -4,10 +4,10 @@ import {
   getFirestore,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDocs,
-  getDoc,
-  addDoc,
+  updateDoc,
   setDoc,
 } from "firebase/firestore";
 const firebaseConfig = {
@@ -26,12 +26,30 @@ const db = getFirestore();
 const ownersCollection = collection(db, "Owners");
 export default db;
 
+export async function getAllDocs() {
+  try {
+    const docSnaps = await getDocs(ownersCollection);
+    let docMap = new Map();
+    docSnaps.docs.map((doc) => docMap.set(doc.id, doc.data()));
+    return docMap;
+  } catch (error) {
+    console.log("getAllDocs() error : " + error.message);
+  }
+}
+
+export async function getDataFromDoc(docNm, fieldNm) {
+  try {
+    let docDataMap = new Map(Object.entries((await getAllDocs()).get(docNm)));
+    return docDataMap.get(fieldNm);
+  } catch (error) {
+    console.log("getDataFromDoc() Error : " + error.message);
+  }
+}
+
 export async function deleteOwnerDocs() {
-  const DOC_REFERENCE = collection(db, "Owners");
-  const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
-  let ownerDocsMap = new Map();
-  DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
-  let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
+  let ownerTeamsMap = new Map(
+    Object.entries((await getAllDocs()).get("teams"))
+  );
   let owners = ownerTeamsMap.get("Names");
   for (let i = 0; i < owners.length; i++) {
     let ownerName = owners[i];
@@ -46,12 +64,14 @@ export async function deleteOwnerDocs() {
     });
   }
 }
-
-export async function getDataFromDoc(docNm, fieldNm) {
-  const DOC_REFERENCE = collection(db, "Owners");
-  const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
-  let ownerDocsMap = new Map();
-  DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
-  let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get(docNm)));
-  return ownerTeamsMap.get(fieldNm);
+export async function deleteMatchScoreOfOwners(matchToDelete) {
+  console.log("deleteMatchScore");
+  let ownerMap = await getDataFromDoc("teams", "Names");
+  for (let i = 0; i < ownerMap.length; i++) {
+    let ownerName = ownerMap[i];
+    const ownerScoresdocRef = doc(db, "Owners", ownerName);
+    await updateDoc(ownerScoresdocRef, {
+      [matchToDelete]: deleteField(),
+    });
+  }
 }
