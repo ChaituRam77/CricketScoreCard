@@ -129,7 +129,7 @@ export default {
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
         this.useAPI = true;
-        this.writeToDB = false;
+        this.writeToDB = true;
         this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
         console.log("this.matchNm : " + this.matchNm);
         let matchExistsInDB = await getDataFromDoc(
