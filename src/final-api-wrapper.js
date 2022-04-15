@@ -32,9 +32,19 @@ export async function getTeamWiseTotalPoints() {
     );
 
     let totalPoints = ownerMatchScoresMap.get("1total");
-    let teamScore = { no: i + 1, name: ownerName, totalPoints: totalPoints };
+    let teamScore = { name: ownerName, totalPoints: totalPoints };
     teamWiseTotalPoints.push(teamScore);
   }
+
+  teamWiseTotalPoints.sort((a, b) => parseFloat(b.totalPoints) - parseFloat(a.totalPoints));
+  for (const [i] of teamWiseTotalPoints.entries()) {
+    if(i < 3) {
+      teamWiseTotalPoints[i].no = '💵'
+    } else {
+      teamWiseTotalPoints[i].no = i+1
+    }
+  }
+
 
   return teamWiseTotalPoints;
 }

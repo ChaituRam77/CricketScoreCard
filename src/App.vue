@@ -1,8 +1,9 @@
 <template>
+  <h1 class='fs-3 app-title'><strong>IPL 2022 Points Table</strong></h1>
   <nav>
-    <router-link to="/">Home</router-link> | 
-    <router-link to="/detailedScoreCard">Detail Scores</router-link> | 
-    <router-link to="/introduceScore">Update</router-link>
+    <router-link to="/">Standings</router-link> &nbsp;&nbsp;
+    <router-link to="/detailedScoreCard">Playerwise Scores</router-link> &nbsp;&nbsp;&nbsp;
+    <router-link to="/introduceScore"><i class="bi bi-three-dots-vertical"></i></router-link>
   </nav>
   <router-view/>
 </template>
@@ -23,6 +24,12 @@ nav {
 nav a {
   font-weight: bold;
   color: #2c3e50;
+}
+
+.app-title {
+  background-color: #0168d0;
+  color: #ffffff;
+  padding: 0.75em
 }
 
 nav a.router-link-exact-active {
