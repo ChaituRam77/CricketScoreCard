@@ -86,6 +86,7 @@ export async function fetchTeamWiseTotalPoints() {
       };
       matchWisePoints.get(owner).push(matchWiseTeamPoints);
     }
+    matchWisePoints.get(owner).sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo));
   }
 }
 

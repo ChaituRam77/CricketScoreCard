@@ -126,11 +126,10 @@ export default {
   },
   methods: {
     async validsecretkeyAndProceed() {
-      // deleteOwnerDocs();
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
         this.useAPI = true;
-        this.writeToDB = true;
+        this.writeToDB = false;
         this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
         console.log("this.matchNm : " + this.matchNm);
         let matchExistsInDB = await getDataFromDoc(
@@ -547,7 +546,8 @@ export default {
         let od = "" + outDesc;
         let outDescValidation = 0;
         od = od.trim();
-        if (od.indexOf(" b ") !== -1 && od.substring(0, 2) == "c ") {
+        if (this.showlogs) console.log("DEBUG OD : " + od);
+        if (!od.includes("c and b") && od.indexOf(" b ") !== -1 && od.substring(0, 2) == "c ") {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
@@ -561,7 +561,9 @@ export default {
           if (this.showlogs) console.log("c&B player : " + player);
           this.increamentMapValue(this.playersBowling, player, "N");
           this.increamentMapValue(this.playersCatchingStumping, player, "N");
+          if (this.showlogs) console.log("c&B player : " + player);
           outDescValidation++;
+          if (this.showlogs) console.log("DEBUG outDescValidation" + outDescValidation);
         }
         if (od.substring(0, 2) == "b ") {
           const bowler = od.substring(od.indexOf("b ") + 2, od.length);
