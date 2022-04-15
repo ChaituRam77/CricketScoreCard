@@ -126,7 +126,6 @@ export default {
   },
   methods: {
     async validsecretkeyAndProceed() {
-      // deleteOwnerDocs();
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
         this.useAPI = true;
