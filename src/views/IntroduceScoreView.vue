@@ -132,7 +132,7 @@ export default {
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
-        this.useAPI = false;
+        this.useAPI = true;
         this.writeToDB = true;
         this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
         console.log("this.matchNm : " + this.matchNm);
@@ -152,8 +152,6 @@ export default {
     },
     async introduceMatchScore() {
       let scorecard = new Map();
-      let matchScoreJSON = require("../data/test.json");
-      // let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
@@ -184,8 +182,7 @@ export default {
             console.log(error);
           });
       } else {
-        this.apiScore = matchScoreJSON;
-        scorecard = matchScoreJSON.scorecard;
+        console.log("Match Score Error");
       }
       // console.log(this.apiScore);
       if (this.showlogs) {
@@ -447,7 +444,7 @@ export default {
           });
         }
       }
-      // alert("Updated successfully");
+      alert("Updated successfully");
     },
 
     claculateTotal(scoreMap) {
