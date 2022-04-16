@@ -188,9 +188,9 @@ export default {
         scorecard = matchScoreJSON.scorecard;
       }
       // console.log(this.apiScore);
-      // if (this.showlogs) {
-      //   console.log(scorecard);
-      // }
+      if (this.showlogs) {
+        console.log(this.apiScore);
+      }
       // console.log(scorecard);
       // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
       /***
