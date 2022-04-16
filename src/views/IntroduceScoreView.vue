@@ -129,48 +129,21 @@ export default {
     };
   },
   methods: {
-    async tempMethod() {
-      this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
-      // this.matchNm = "45951_MIvsKKR";
-      // this.mom = "Pat Cummins";
-      // this.secretKey == "HailKing";
-      this.showlogs = true;
-      this.useAPI = true;
-      this.writeToDB = true;
-      // let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
-      // console.log(matchScoreJSON);
-      await this.introduceMatchScore();
-    },
-    async tempMethod1() {
-      let matchMomMap = await getMatchNameAndMom();
-      for (let [key, value] of matchMomMap) {
-        console.log("Match : " + key + " MoM : " + value);
-        this.matchNm = key;
-        this.mom = value;
-        // this.secretKey == "HailKing";
-        this.showlogs = true;
-        this.useAPI = false;
-        this.writeToDB = true;
-        // await this.introduceMatchScore();
-        let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
-        console.log(matchScoreJSON);
-      }
-    },
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
         this.useAPI = false;
         this.writeToDB = true;
-        // this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
-        // console.log("this.matchNm : " + this.matchNm);
-        // let matchExistsInDB = await getDataFromDoc(
-        //   "ApiScoreCard",
-        //   this.matchNm
-        // );
-        // if (this.writeToDB && matchExistsInDB !== undefined) {
-        //   alert("Match ID already introduced!!!");
-        //   return undefined;
-        // }
+        this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
+        console.log("this.matchNm : " + this.matchNm);
+        let matchExistsInDB = await getDataFromDoc(
+          "ApiScoreCard",
+          this.matchNm
+        );
+        if (this.writeToDB && matchExistsInDB !== undefined) {
+          alert("Match ID already introduced!!!");
+          return undefined;
+        }
         this.introduceMatchScore();
       } else {
         alert("Invalid Secret Key");
@@ -348,13 +321,9 @@ export default {
           //   false
           // );
           const matchScoreApidocRef = doc(db, "Owners", "ApiScoreCard");
-          await setDoc(
-            matchScoreApidocRef,
-            {
-              [this.matchNm]: this.apiScore,
-            },
-            { merge: true }
-          ).catch((err) => {
+          await updateDoc(matchScoreApidocRef, {
+            [this.matchNm]: this.apiScore,
+          }).catch((err) => {
             console.log("error: " + err.message);
           });
         }
