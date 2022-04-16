@@ -46,6 +46,23 @@ export async function getDataFromDoc(docNm, fieldNm) {
   }
 }
 
+export async function getMatchNameAndMom() {
+  try {
+    let docDataMap = new Map(
+      Object.entries((await getAllDocs()).get("MatchScores"))
+    );
+    let momMatchMap = new Map();
+    docDataMap.delete("1total");
+    for (let [key, value] of docDataMap) {
+      let matchDataMap = new Map(Object.entries(value));
+      momMatchMap.set(key, matchDataMap.get("0MoM"));
+    }
+    return momMatchMap;
+  } catch (error) {
+    console.log("getMatchNameAndMom() Error : " + error);
+  }
+}
+
 export async function deleteOwnerDocs() {
   let ownerTeamsMap = new Map(
     Object.entries((await getAllDocs()).get("teams"))
@@ -53,16 +70,15 @@ export async function deleteOwnerDocs() {
   let owners = ownerTeamsMap.get("Names");
   for (let i = 0; i < owners.length; i++) {
     let ownerName = owners[i];
-    console.log(ownerName);
     const ownerScoresdocRef = doc(db, "Owners", ownerName);
     await deleteDoc(ownerScoresdocRef);
-    console.log("Deleted");
     await setDoc(ownerScoresdocRef, {
       "1total": 0,
     }).catch((err) => {
       console.log(err.message);
     });
   }
+  console.log("Deleted");
 }
 export async function deleteMatchScoreOfOwners(matchToDelete) {
   console.log("deleteMatchScore");

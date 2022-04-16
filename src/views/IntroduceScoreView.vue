@@ -4,7 +4,7 @@
       <div class="col-md-6 offser-md-3">
         <h2>Introduce match details</h2>
       </div>
-      <form @submit.prevent="validsecretkeyAndProceed">
+      <form @submit.prevent="tempMethod">
         <div class="form-group row">
           <label for="inputMatchID" class="col-sm-2 col-form-label"
             >Match ID</label
@@ -78,7 +78,11 @@
 
 <script>
 import db, { deleteOwnerDocs } from "../firebase-config";
-import { getDataFromDoc, deleteMatchScoreOfOwners } from "../firebase-config";
+import {
+  getDataFromDoc,
+  getMatchNameAndMom,
+  deleteMatchScoreOfOwners,
+} from "../firebase-config";
 import {
   collection,
   getDoc,
@@ -125,21 +129,48 @@ export default {
     };
   },
   methods: {
+    async tempMethod() {
+      this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
+      // this.matchNm = "45951_MIvsKKR";
+      // this.mom = "Pat Cummins";
+      // this.secretKey == "HailKing";
+      this.showlogs = true;
+      this.useAPI = true;
+      this.writeToDB = true;
+      // let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
+      // console.log(matchScoreJSON);
+      await this.introduceMatchScore();
+    },
+    async tempMethod1() {
+      let matchMomMap = await getMatchNameAndMom();
+      for (let [key, value] of matchMomMap) {
+        console.log("Match : " + key + " MoM : " + value);
+        this.matchNm = key;
+        this.mom = value;
+        // this.secretKey == "HailKing";
+        this.showlogs = true;
+        this.useAPI = false;
+        this.writeToDB = true;
+        // await this.introduceMatchScore();
+        let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
+        console.log(matchScoreJSON);
+      }
+    },
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
         this.showlogs = true;
-        this.useAPI = true;
+        this.useAPI = false;
         this.writeToDB = true;
-        this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
-        console.log("this.matchNm : " + this.matchNm);
-        let matchExistsInDB = await getDataFromDoc(
-          "ApiScoreCard",
-          this.matchNm
-        );
-        if (this.writeToDB && matchExistsInDB !== undefined) {
-          alert("Match ID already introduced!!!");
-          return undefined;
-        }
+        // this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
+        // console.log("this.matchNm : " + this.matchNm);
+        // let matchExistsInDB = await getDataFromDoc(
+        //   "ApiScoreCard",
+        //   this.matchNm
+        // );
+        // if (this.writeToDB && matchExistsInDB !== undefined) {
+        //   alert("Match ID already introduced!!!");
+        //   return undefined;
+        // }
         this.introduceMatchScore();
       } else {
         alert("Invalid Secret Key");
@@ -149,17 +180,13 @@ export default {
     async introduceMatchScore() {
       let scorecard = new Map();
       let matchScoreJSON = require("../data/test.json");
-      // let matchScoreJSON = await getDataFromDoc(
-      //   "ApiScoreCard",
-      //   ""
-      // );
+      // let matchScoreJSON = await getDataFromDoc("ApiScoreCard", this.matchNm);
       let playersMatch = new Map();
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
       let ownerTotalPoints = new Map();
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
-      console.log("ShowLogs : " + this.showlogs);
       if (this.showlogs) console.log("logs : " + this.matchID + this.mom);
 
       const options = {
@@ -187,11 +214,11 @@ export default {
         this.apiScore = matchScoreJSON;
         scorecard = matchScoreJSON.scorecard;
       }
-      console.log(this.apiScore);
-      if (this.showlogs) {
-        console.log(scorecard);
-      }
-      console.log(scorecard);
+      // console.log(this.apiScore);
+      // if (this.showlogs) {
+      //   console.log(scorecard);
+      // }
+      // console.log(scorecard);
       // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
       /***
        * Fetch scores of players & assign to playersScore map
@@ -312,14 +339,14 @@ export default {
          * Doc : MatchScores
          */
         if (this.writeToDB) {
-          await this.assignToDB(
-            "MatchScores",
-            this.matchNm,
-            matchScoreTotalPoints,
-            key,
-            conMap,
-            false
-          );
+          // await this.assignToDB(
+          //   "MatchScores",
+          //   this.matchNm,
+          //   matchScoreTotalPoints,
+          //   key,
+          //   conMap,
+          //   false
+          // );
           const matchScoreApidocRef = doc(db, "Owners", "ApiScoreCard");
           await setDoc(
             matchScoreApidocRef,
@@ -383,6 +410,7 @@ export default {
           const element = ownerPlayersArr[i];
           for (let [keys, values] of this.playersScore) {
             // keys : match played players & values :their scores
+
             let playerPoints = new Map();
             playerPoints = values;
             let playerTotalPoints = playerPoints.get("1total");
@@ -450,7 +478,7 @@ export default {
           });
         }
       }
-      alert("Updated successfully");
+      // alert("Updated successfully");
     },
 
     claculateTotal(scoreMap) {
@@ -505,23 +533,15 @@ export default {
       const docRef = doc(db, "Owners", document);
       this.obj = v;
       if (createTotalOnlyFlag == true) {
-        return await setDoc(
-          docRef,
-          {
-            [matchNm]: { "1total": totalPoints },
-          },
-          { merge: true }
-        ).catch((err) => {
+        return await updateDoc(docRef, {
+          [matchNm]: { "1total": totalPoints },
+        }).catch((err) => {
           console.log("error: " + err.message);
         });
       } else {
-        return await setDoc(
-          docRef,
-          {
-            [matchNm]: { "1total": totalPoints, [k]: this.obj },
-          },
-          { merge: true }
-        ).catch((err) => {
+        return await updateDoc(docRef, {
+          [matchNm]: { "1total": totalPoints, [k]: this.obj },
+        }).catch((err) => {
           console.log("error: " + err.message);
         });
       }
@@ -547,7 +567,11 @@ export default {
         let outDescValidation = 0;
         od = od.trim();
         if (this.showlogs) console.log("DEBUG OD : " + od);
-        if (!od.includes("c and b") && od.indexOf(" b ") !== -1 && od.substring(0, 2) == "c ") {
+        if (
+          !od.includes("c and b") &&
+          od.indexOf(" b ") !== -1 &&
+          od.substring(0, 2) == "c "
+        ) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
@@ -563,7 +587,8 @@ export default {
           this.increamentMapValue(this.playersCatchingStumping, player, "N");
           if (this.showlogs) console.log("c&B player : " + player);
           outDescValidation++;
-          if (this.showlogs) console.log("DEBUG outDescValidation" + outDescValidation);
+          if (this.showlogs)
+            console.log("DEBUG outDescValidation" + outDescValidation);
         }
         if (od.substring(0, 2) == "b ") {
           const bowler = od.substring(od.indexOf("b ") + 2, od.length);
