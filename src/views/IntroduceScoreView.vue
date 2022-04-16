@@ -4,7 +4,7 @@
       <div class="col-md-6 offser-md-3">
         <h2>Introduce match details</h2>
       </div>
-      <form @submit.prevent="tempMethod">
+      <form @submit.prevent="validsecretkeyAndProceed">
         <div class="form-group row">
           <label for="inputMatchID" class="col-sm-2 col-form-label"
             >Match ID</label
