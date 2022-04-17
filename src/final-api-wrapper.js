@@ -44,8 +44,6 @@ export async function getTeamWiseTotalPoints() {
       teamWiseTotalPoints[i].no = i+1
     }
   }
-
-
   return teamWiseTotalPoints;
 }
 
@@ -82,8 +80,9 @@ export async function fetchTeamWiseTotalPoints() {
         matchId: matchId,
         matchVs: matchVs,
         matchNo: matchNo,
-        points: teamTotalPoints,
+        points: teamTotalPoints == undefined ? "---" : teamTotalPoints,
       };
+      // console.log(matchWiseTeamPoints)
       matchWisePoints.get(owner).push(matchWiseTeamPoints);
     }
     matchWisePoints.get(owner).sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo));
