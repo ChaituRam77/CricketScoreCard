@@ -77,20 +77,14 @@
 </template>
 
 <script>
-import db, { deleteOwnerDocs } from "../firebase-config";
+import db, { deleteOwnerDocs, getAllDocs } from "../firebase-config";
 import {
+  getFieldDataFromDoc,
   getDataFromDoc,
-  getMatchNameAndMom,
+  addFieldToDB,
   deleteMatchScoreOfOwners,
 } from "../firebase-config";
-import {
-  collection,
-  getDoc,
-  setDoc,
-  doc,
-  updateDoc,
-  getDocs,
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import axios from "axios";
 
 export default {
@@ -129,14 +123,34 @@ export default {
     };
   },
   methods: {
+    // async temp() {
+    //   // await deleteOwnerDocs();
+    //   let scoreMap = await getDataFromDoc("MatchScores");
+    //   console.log(scoreMap);
+    //   for (let [key, value] of scoreMap) {
+    //     this.showlogs = true;
+    //     this.useAPI = false;
+    //     this.writeToDB = true;
+    //     this.matchNm = key;
+    //     let matchNmData = key.split("_");
+    //     this.matchID = matchNmData[0];
+    //     this.team1 = matchNmData[1].split("vs")[0];
+    //     this.team2 = matchNmData[1].split("vs")[1];
+    //     this.matchID = matchNmData[0];
+    //     this.mom = value;
+    //     console.log(
+    //       this.matchID + "|" + this.team1 + "|" + this.team2 + "|" + this.mom
+    //     );
+    //     await this.introduceMatchScore();
+    //   }
+    // },
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
-        this.showlogs = true;
+        this.showlogs = false;
         this.useAPI = true;
         this.writeToDB = true;
         this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
-        console.log("this.matchNm : " + this.matchNm);
-        let matchExistsInDB = await getDataFromDoc(
+        let matchExistsInDB = await getFieldDataFromDoc(
           "ApiScoreCard",
           this.matchNm
         );
@@ -156,6 +170,7 @@ export default {
       let matchScoreTotalPoints = 0;
       let ownerMatchTotalPoints = new Map();
       let ownerTotalPoints = new Map();
+      this.apiScore = {};
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
       if (this.showlogs) console.log("logs : " + this.matchID + this.mom);
@@ -182,25 +197,50 @@ export default {
             console.log(error);
           });
       } else {
-        console.log("Match Score Error");
+        this.apiScore = await getFieldDataFromDoc("ApiScoreCard", this.matchNm);
+        scorecard = this.apiScore.scorecard;
       }
-      // console.log(this.apiScore);
       if (this.showlogs) {
         console.log(this.apiScore);
+        console.log(scorecard);
       }
-      // console.log(scorecard);
-      // const matchNm = this.matchId + "_" + match[0] + "vs" + match[1];
+      if (this.writeToDB) {
+        await addFieldToDB("ApiScoreCard", this.matchNm, this.apiScore);
+        await addFieldToDB("MatchScores", this.matchNm, this.mom);
+      }
       /***
        * Fetch scores of players & assign to playersScore map
        */
+
       let m = 1;
+      let p = 1;
+      this.playersScore.clear();
+      this.playersBowling.clear();
+      this.playersCatchingStumping.clear();
+      this.playersRunOuts.clear();
+      this.playersBowlingBowledLbw.clear();
+      this.playersNickName.clear();
+      this.playersNickNameAsValue.clear();
+
       Object.entries(scorecard).forEach((item) => {
-        console.log("Innings : " + m + "....................");
+        console.log(
+          "Innings : " + m + "........................................"
+        );
         m++;
         if (item.batsman !== null) {
           Object.entries(item[1].batsman).forEach((batsman) => {
             let playerScoreSubMap = new Map();
+            playerScoreSubMap.clear;
             let plyrNm = batsman[1].name;
+            console.log(
+              plyrNm +
+                " | " +
+                batsman[1].runs +
+                " | " +
+                batsman[1].sixes +
+                " | " +
+                batsman[1].fours
+            );
             playerScoreSubMap.set(
               this.switchValues.runs,
               this.getValidScore(batsman[1].runs)
@@ -215,17 +255,25 @@ export default {
             );
             this.playersScore.set(plyrNm, playerScoreSubMap);
             let plyrNickNm = batsman[1].nickName;
+            if (this.showlogs) {
+              console.log();
+            }
             if (plyrNickNm !== undefined) {
-              // playerScoreSubMap.set("nickName", plyrNickNm);
+              if (this.showlogs)
+                console.log("player Nick Name : " + plyrNickNm);
               this.playersNickName.set(plyrNickNm, plyrNm);
               this.playersNickNameAsValue.set(plyrNm, plyrNickNm);
             }
-            if (this.showlogs)
-              console.log("Out Desc : " + plyrNm + " - " + batsman[1].outDec);
+            if (this.showlogs) {
+              console.log(
+                p + ")Out Desc : " + plyrNm + " - " + batsman[1].outDec
+              );
+            }
             this.addOutDescrition(batsman[1].outDec);
+            p++;
           });
         } else {
-          console.log("In Else" + item);
+          alert("Error : Invalid Scorecard!!!!");
         }
       });
       if (this.showlogs) {
@@ -291,7 +339,6 @@ export default {
           playerScoreValues.set(this.switchValues.Substitute, "Y");
         }
       });
-      // this.playersScore.forEach((values, keys) => {
       for (let [key, value] of this.playersScore) {
         let subMap = new Map();
         subMap = value;
@@ -301,60 +348,21 @@ export default {
           value.set(this.switchValues.mom, "N");
         }
         value.set("1total", this.claculateTotal(subMap));
-        const conMap = Object.fromEntries(value);
-        // console.log([...[value].entries()]);
         matchScoreTotalPoints = matchScoreTotalPoints + value.get("1total");
-        /**
-         * DB write MatchScores
-         * Doc : MatchScores
-         */
-        if (this.writeToDB) {
-          // await this.assignToDB(
-          //   "MatchScores",
-          //   this.matchNm,
-          //   matchScoreTotalPoints,
-          //   key,
-          //   conMap,
-          //   false
-          // );
-          const matchScoreApidocRef = doc(db, "Owners", "ApiScoreCard");
-          await updateDoc(matchScoreApidocRef, {
-            [this.matchNm]: this.apiScore,
-          }).catch((err) => {
-            console.log("error: " + err.message);
-          });
-        }
         if (this.showlogs) {
           console.log("Player : " + key);
-          console.log(conMap);
+          console.log(Object.fromEntries(value));
         }
       }
-      /**
-       * DB write MoM to MatchScores
-       * Doc : MatchScores
-       */
-      if (this.writeToDB) {
-        const matchScoresdocRef = doc(db, "Owners", "MatchScores");
-        await setDoc(
-          matchScoresdocRef,
-          {
-            [this.matchNm]: { "0MoM": this.mom },
-          },
-          { merge: true }
-        );
-      }
-
-      const docRef = collection(db, "Owners");
-      const docSnaps = await getDocs(docRef);
-      let ownerDocsMap = new Map();
-      docSnaps.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
-      let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
-      let matchTotalPoints = 0;
+      let ownerDocsMap = await getAllDocs();
+      let ownerTeamsMap = await getDataFromDoc("teams");
       ownerTeamsMap.delete("Names");
-      // ownerTeamsMap.forEach((values, keys) => {
       for (let [keys, values] of ownerTeamsMap) {
         //key : OwnerNames values : team players
         let ownerPlayersArr = values;
+        let ownerHasMatchValues = false;
+        let ownerMatchObjMap = new Map();
+        let ownerMatch1Total = 0;
         let ownerName = keys;
         if (this.showlogs) {
           console.log("Owner Name 1 : " + ownerName);
@@ -363,13 +371,7 @@ export default {
         let ownerTeamsTotalPoints = new Map(
           Object.entries(ownerDocsMap.get(ownerName))
         );
-        /**
-         * DB write 1Total to match name of Owner Name
-         * Doc : ownerName
-         */
-        if (this.writeToDB) {
-          await this.assignToDB(ownerName, this.matchNm, 0, NaN, NaN, true);
-        }
+
         ownerMatchTotalPoints.set(ownerName, 0);
         ownerTotalPoints.set(ownerName, ownerTeamsTotalPoints.get("1total"));
         for (let i = 0; i < ownerPlayersArr.length; i++) {
@@ -379,7 +381,6 @@ export default {
 
             let playerPoints = new Map();
             playerPoints = values;
-            let playerTotalPoints = playerPoints.get("1total");
             if (
               this.playersNickNameAsValue.has(element) &&
               this.playersNickNameAsValue.get(element) == keys
@@ -394,27 +395,17 @@ export default {
                 );
               }
             }
-            if (element == keys) {
+
+            if (element === keys) {
+              ownerHasMatchValues = true;
               let ownerMatchPoints = ownerMatchTotalPoints.get(ownerName);
-              let player1TotalPoints = playerPoints.get("1total");
-              let newPoints = ownerMatchPoints + player1TotalPoints;
+              let newPoints = ownerMatchPoints + playerPoints.get("1total");
               ownerMatchTotalPoints.set(ownerName, newPoints);
               let ownerNewPoints = ownerMatchTotalPoints.get(ownerName);
-              let playerPointsMap = Object.fromEntries(playerPoints);
-              /**
-               * DB write player score to Owner Name
-               * Doc : ownerName
-               */
-              if (this.writeToDB) {
-                await this.assignToDB(
-                  ownerName,
-                  this.matchNm,
-                  ownerNewPoints,
-                  keys,
-                  playerPointsMap,
-                  false
-                );
-              }
+              let playerPointsObj = Object.fromEntries(playerPoints);
+              ownerMatchObjMap.set(element, playerPointsObj);
+              ownerMatch1Total = ownerMatch1Total + playerPoints.get("1total");
+
               if (this.showlogs) {
                 console.log(
                   ownerName +
@@ -425,10 +416,20 @@ export default {
                     " | " +
                     ownerNewPoints
                 );
-                console.log(playerPoints);
               }
             }
           }
+        }
+        if (ownerHasMatchValues) {
+          if (this.writeToDB) {
+            let ownerMatchPointsObj = Object.assign(
+              { "1total": ownerMatch1Total },
+              Object.fromEntries(ownerMatchObjMap)
+            );
+            await addFieldToDB(ownerName, this.matchNm, ownerMatchPointsObj);
+          }
+        } else {
+          await addFieldToDB(ownerName, this.matchNm, 0);
         }
       }
       if (this.showlogs) console.log(ownerMatchTotalPoints);
@@ -438,6 +439,7 @@ export default {
        */
       if (this.writeToDB) {
         for (let [key, value] of ownerMatchTotalPoints) {
+          let ownerMatchTotalPoints = value + ownerTotalPoints.get(key);
           const docRef = doc(db, "Owners", key);
           await updateDoc(docRef, {
             "1total": value + ownerTotalPoints.get(key),
@@ -488,30 +490,7 @@ export default {
         console.log("error: " + err.message);
       });
     },
-    async assignToDB(
-      document,
-      matchNm,
-      totalPoints,
-      k,
-      v,
-      createTotalOnlyFlag
-    ) {
-      const docRef = doc(db, "Owners", document);
-      this.obj = v;
-      if (createTotalOnlyFlag == true) {
-        return await updateDoc(docRef, {
-          [matchNm]: { "1total": totalPoints },
-        }).catch((err) => {
-          console.log("error: " + err.message);
-        });
-      } else {
-        return await updateDoc(docRef, {
-          [matchNm]: { "1total": totalPoints, [k]: this.obj },
-        }).catch((err) => {
-          console.log("error: " + err.message);
-        });
-      }
-    },
+
     getValidScore(value) {
       return value == undefined ? 0 : value;
     },
@@ -532,7 +511,7 @@ export default {
         let od = "" + outDesc;
         let outDescValidation = 0;
         od = od.trim();
-        if (this.showlogs) console.log("DEBUG OD : " + od);
+        // if (this.showlogs) console.log("DEBUG OD : " + od);
         if (
           !od.includes("c and b") &&
           od.indexOf(" b ") !== -1 &&

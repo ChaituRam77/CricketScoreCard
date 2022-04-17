@@ -37,29 +37,21 @@ export async function getAllDocs() {
   }
 }
 
-export async function getDataFromDoc(docNm, fieldNm) {
+export async function getDataFromDoc(docNm) {
   try {
     let docDataMap = new Map(Object.entries((await getAllDocs()).get(docNm)));
-    return docDataMap.get(fieldNm);
+    return docDataMap;
   } catch (error) {
     console.log("getDataFromDoc() Error : " + error.message);
   }
 }
 
-export async function getMatchNameAndMom() {
+export async function getFieldDataFromDoc(docNm, fieldNm) {
   try {
-    let docDataMap = new Map(
-      Object.entries((await getAllDocs()).get("MatchScores"))
-    );
-    let momMatchMap = new Map();
-    docDataMap.delete("1total");
-    for (let [key, value] of docDataMap) {
-      let matchDataMap = new Map(Object.entries(value));
-      momMatchMap.set(key, matchDataMap.get("0MoM"));
-    }
-    return momMatchMap;
+    let docDataMap = new Map(Object.entries((await getAllDocs()).get(docNm)));
+    return docDataMap.get(fieldNm);
   } catch (error) {
-    console.log("getMatchNameAndMom() Error : " + error);
+    console.log("getFieldDataFromDoc() Error : " + error.message);
   }
 }
 
@@ -82,7 +74,7 @@ export async function deleteOwnerDocs() {
 }
 export async function deleteMatchScoreOfOwners(matchToDelete) {
   console.log("deleteMatchScore");
-  let ownerMap = await getDataFromDoc("teams", "Names");
+  let ownerMap = await getFieldDataFromDoc("teams", "Names");
   for (let i = 0; i < ownerMap.length; i++) {
     let ownerName = ownerMap[i];
     const ownerScoresdocRef = doc(db, "Owners", ownerName);
@@ -90,4 +82,17 @@ export async function deleteMatchScoreOfOwners(matchToDelete) {
       [matchToDelete]: deleteField(),
     });
   }
+}
+export async function addFieldToDB(documentNm, fieldNm, fieldObj) {
+  const docRef = doc(db, "Owners", documentNm);
+  // const obj = Object.fromEntries(fieldObj);
+  await setDoc(
+    docRef,
+    {
+      [fieldNm]: fieldObj,
+    },
+    { merge: true }
+  ).catch((err) => {
+    console.log("error: " + err.message);
+  });
 }
