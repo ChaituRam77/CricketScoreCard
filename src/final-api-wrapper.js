@@ -1,14 +1,43 @@
 import db from "./firebase-config";
+import { getDataFromDoc } from "./firebase-config";
 import {
   collection,
   getDoc,
   setDoc,
   doc,
   updateDoc,
-  getDocs,
+  getDocs
 } from "firebase/firestore";
 
 let matchWisePoints = new Map();
+
+export async function getOwnerNames() {
+  const DOC_REFERENCE = collection(db, "Owners");
+  const DOC_SNAPSHOT = await getDocs(DOC_REFERENCE);
+
+  let ownerDocsMap = new Map();
+  DOC_SNAPSHOT.docs.map((doc) => ownerDocsMap.set(doc.id, doc.data()));
+
+  let ownerTeamsMap = new Map(Object.entries(ownerDocsMap.get("teams")));
+
+  let owners = ownerTeamsMap.get("Names");
+  return owners
+}
+
+export async function getMatches() {
+  const manOfTheMatchList = await getDataFromDoc("MatchScores")
+  let allMatches = []
+  for(const [k] of manOfTheMatchList.entries()) {
+    let matchSplit = k.split('_')
+    let matchId = matchSplit[0]
+    let matchVsTeams = matchSplit[1]
+    allMatches.push({
+      'id': matchId,
+      'teams': matchVsTeams
+    })
+  }
+  return allMatches;
+}
 
 export async function getTeamWiseTotalPoints() {
   const DOC_REFERENCE = collection(db, "Owners");
@@ -44,8 +73,6 @@ export async function getTeamWiseTotalPoints() {
       teamWiseTotalPoints[i].no = i+1
     }
   }
-
-
   return teamWiseTotalPoints;
 }
 
@@ -82,8 +109,9 @@ export async function fetchTeamWiseTotalPoints() {
         matchId: matchId,
         matchVs: matchVs,
         matchNo: matchNo,
-        points: teamTotalPoints,
+        points: teamTotalPoints == undefined ? "---" : teamTotalPoints,
       };
+      // console.log(matchWiseTeamPoints)
       matchWisePoints.get(owner).push(matchWiseTeamPoints);
     }
     matchWisePoints.get(owner).sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo));
