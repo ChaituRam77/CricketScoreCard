@@ -77,7 +77,11 @@
 </template>
 
 <script>
-import db, { deleteOwnerDocs, getAllDocs } from "../firebase-config";
+import db, {
+  deleteOwnerDocs,
+  deleteValueFromDoc,
+  getAllDocs,
+} from "../firebase-config";
 import {
   getFieldDataFromDoc,
   getDataFromDoc,
@@ -86,6 +90,7 @@ import {
 } from "../firebase-config";
 import { doc, updateDoc } from "firebase/firestore";
 import axios from "axios";
+import { data } from "autoprefixer";
 
 export default {
   data() {
@@ -106,6 +111,7 @@ export default {
       playersBowlingBowledLbw: new Map(),
       playersNickName: new Map(),
       playersNickNameAsValue: new Map(),
+      globalNickNameMapForMatch: new Map(),
       playersSubstitute: [],
       apiScore: {},
       obj: {},
@@ -123,27 +129,29 @@ export default {
     };
   },
   methods: {
-    // async temp() {
-    //   // await deleteOwnerDocs();
-    //   let scoreMap = await getDataFromDoc("MatchScores");
-    //   console.log(scoreMap);
-    //   for (let [key, value] of scoreMap) {
-    //     this.showlogs = true;
-    //     this.useAPI = false;
-    //     this.writeToDB = true;
-    //     this.matchNm = key;
-    //     let matchNmData = key.split("_");
-    //     this.matchID = matchNmData[0];
-    //     this.team1 = matchNmData[1].split("vs")[0];
-    //     this.team2 = matchNmData[1].split("vs")[1];
-    //     this.matchID = matchNmData[0];
-    //     this.mom = value;
-    //     console.log(
-    //       this.matchID + "|" + this.team1 + "|" + this.team2 + "|" + this.mom
-    //     );
-    //     await this.introduceMatchScore();
-    //   }
-    // },
+    async temp() {
+      // await deleteOwnerDocs();
+      let scoreMap = await getDataFromDoc("MatchScores");
+      // scoreMap.clear();
+      // scoreMap.set("45976_DCvsKKR", "Kuldeep Yadav");
+      console.log(scoreMap);
+      for (let [key, value] of scoreMap) {
+        this.showlogs = true;
+        this.useAPI = false;
+        this.writeToDB = true;
+        this.matchNm = key;
+        let matchNmData = key.split("_");
+        this.matchID = matchNmData[0];
+        this.team1 = matchNmData[1].split("vs")[0];
+        this.team2 = matchNmData[1].split("vs")[1];
+        this.matchID = matchNmData[0];
+        this.mom = value;
+        console.log(
+          this.matchID + "|" + this.team1 + "|" + this.team2 + "|" + this.mom
+        );
+        await this.introduceMatchScore();
+      }
+    },
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
         this.showlogs = false;
@@ -171,6 +179,22 @@ export default {
       let ownerMatchTotalPoints = new Map();
       let ownerTotalPoints = new Map();
       this.apiScore = {};
+      let globalNickNameMap = new Map(
+        Object.entries(require("../data/NickNames"))
+      );
+      let team1NickNameMap = new Map(
+        Object.entries(globalNickNameMap.get(this.team1))
+      );
+      let team2NickNameMap = new Map(
+        Object.entries(globalNickNameMap.get(this.team2))
+      );
+      this.globalNickNameMapForMatch = new Map([
+        ...team1NickNameMap,
+        ...team2NickNameMap,
+      ]);
+      console.log(
+        "globalNickNameMapForMatch : " + [...this.globalNickNameMapForMatch]
+      );
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
       if (this.showlogs) console.log("logs : " + this.matchID + this.mom);
@@ -221,6 +245,7 @@ export default {
       this.playersBowlingBowledLbw.clear();
       this.playersNickName.clear();
       this.playersNickNameAsValue.clear();
+      this.playersSubstitute = [];
 
       Object.entries(scorecard).forEach((item) => {
         console.log(
@@ -232,15 +257,28 @@ export default {
             let playerScoreSubMap = new Map();
             playerScoreSubMap.clear;
             let plyrNm = batsman[1].name;
-            console.log(
-              plyrNm +
-                " | " +
-                batsman[1].runs +
-                " | " +
-                batsman[1].sixes +
-                " | " +
-                batsman[1].fours
-            );
+            if (this.globalNickNameMapForMatch.has(plyrNm)) {
+              plyrNm = this.globalNickNameMapForMatch.get(plyrNm);
+              console.log(
+                "Inside globalNickNameMapForMatch APINm : " +
+                  batsman[1].name +
+                  " NickNm : " +
+                  plyrNm
+              );
+            }
+
+            if (this.showlogs) {
+              console.log(
+                plyrNm +
+                  " | " +
+                  batsman[1].runs +
+                  " | " +
+                  batsman[1].sixes +
+                  " | " +
+                  batsman[1].fours
+              );
+            }
+
             playerScoreSubMap.set(
               this.switchValues.runs,
               this.getValidScore(batsman[1].runs)
@@ -254,6 +292,7 @@ export default {
               this.getValidScore(batsman[1].fours)
             );
             this.playersScore.set(plyrNm, playerScoreSubMap);
+            console.log("PLAYER SCORE IS SET.");
             let plyrNickNm = batsman[1].nickName;
             if (this.showlogs) {
               console.log();
@@ -277,6 +316,7 @@ export default {
         }
       });
       if (this.showlogs) {
+        console.log(this.playersScore);
         console.log("NickNames Map : " + [...this.playersNickName.entries()]);
         console.log("Bowling Map : " + [...this.playersBowling.entries()]);
       }
@@ -316,27 +356,40 @@ export default {
       }
       this.adjustNameNAssignToPlayerScore(
         this.playersSubstitute,
-        this.switchValues.BowledLbw
+        this.switchValues.Substitute
       );
       this.playersScore.forEach((values, keys) => {
-        let playerScoreValues = new Map();
-        playerScoreValues = this.playersScore.get(keys);
-        if (playerScoreValues.get(this.switchValues.Bowling) == undefined) {
-          playerScoreValues.set(this.switchValues.Bowling, 0);
-        }
-        if (playerScoreValues.get(this.switchValues.BowledLbw) == undefined) {
-          playerScoreValues.set(this.switchValues.BowledLbw, 0);
+        if (
+          this.playersScore.get(keys).get(this.switchValues.Bowling) ==
+          undefined
+        ) {
+          this.playersScore.get(keys).set(this.switchValues.Bowling, 0);
         }
         if (
-          playerScoreValues.get(this.switchValues.CatchingStumping) == undefined
+          this.playersScore.get(keys).get(this.switchValues.BowledLbw) ==
+          undefined
         ) {
-          playerScoreValues.set(this.switchValues.CatchingStumping, 0);
+          this.playersScore.get(keys).set(this.switchValues.BowledLbw, 0);
         }
-        if (playerScoreValues.get(this.switchValues.RunOuts) == undefined) {
-          playerScoreValues.set(this.switchValues.RunOuts, 0);
+        if (
+          this.playersScore.get(keys).get(this.switchValues.CatchingStumping) ==
+          undefined
+        ) {
+          this.playersScore
+            .get(keys)
+            .set(this.switchValues.CatchingStumping, 0);
         }
-        if (playerScoreValues.get(this.switchValues.Substitute) == undefined) {
-          playerScoreValues.set(this.switchValues.Substitute, "Y");
+        if (
+          this.playersScore.get(keys).get(this.switchValues.RunOuts) ==
+          undefined
+        ) {
+          this.playersScore.get(keys).set(this.switchValues.RunOuts, 0);
+        }
+        if (
+          this.playersScore.get(keys).get(this.switchValues.Substitute) ==
+          undefined
+        ) {
+          this.playersScore.get(keys).set(this.switchValues.Substitute, "Y");
         }
       });
       for (let [key, value] of this.playersScore) {
@@ -357,6 +410,7 @@ export default {
       let ownerDocsMap = await getAllDocs();
       let ownerTeamsMap = await getDataFromDoc("teams");
       ownerTeamsMap.delete("Names");
+      console.log([...this.playersScore]);
       for (let [keys, values] of ownerTeamsMap) {
         //key : OwnerNames values : team players
         let ownerPlayersArr = values;
@@ -365,7 +419,7 @@ export default {
         let ownerMatch1Total = 0;
         let ownerName = keys;
         if (this.showlogs) {
-          console.log("Owner Name 1 : " + ownerName);
+          console.log("Owner Name : " + ownerName);
           console.log(ownerPlayersArr);
         }
         let ownerTeamsTotalPoints = new Map(
@@ -375,17 +429,17 @@ export default {
         ownerMatchTotalPoints.set(ownerName, 0);
         ownerTotalPoints.set(ownerName, ownerTeamsTotalPoints.get("1total"));
         for (let i = 0; i < ownerPlayersArr.length; i++) {
-          const element = ownerPlayersArr[i];
+          const element = `${ownerPlayersArr[i]}`;
           for (let [keys, values] of this.playersScore) {
             // keys : match played players & values :their scores
-
+            let matchPlayer = `${keys}`;
             let playerPoints = new Map();
             playerPoints = values;
             if (
               this.playersNickNameAsValue.has(element) &&
               this.playersNickNameAsValue.get(element) == keys
             ) {
-              if (element !== keys) {
+              if (element.toUpperCase() !== keys.toUpperCase()) {
                 element == this.playersNickNameAsValue.get(element);
                 console.log(
                   "Nick Name " +
@@ -396,7 +450,7 @@ export default {
               }
             }
 
-            if (element === keys) {
+            if (element.toUpperCase() === matchPlayer.toUpperCase()) {
               ownerHasMatchValues = true;
               let ownerMatchPoints = ownerMatchTotalPoints.get(ownerName);
               let newPoints = ownerMatchPoints + playerPoints.get("1total");
@@ -446,7 +500,10 @@ export default {
           });
         }
       }
-      alert("Updated successfully");
+      console.log(
+        "**************************Updated******************************************"
+      );
+      // alert("Updated successfully");
     },
 
     claculateTotal(scoreMap) {
@@ -507,7 +564,12 @@ export default {
        * hit wicket
        */
 
-      if (outDesc !== undefined && outDesc !== "not out") {
+      if (
+        outDesc !== undefined &&
+        outDesc !== "not out" &&
+        outDesc !== "retd out" &&
+        outDesc !== "retd hurt"
+      ) {
         let od = "" + outDesc;
         let outDescValidation = 0;
         od = od.trim();
@@ -520,7 +582,15 @@ export default {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
-          const catcher = od.substring(2, od.indexOf(" b "));
+          let catcher = od.substring(2, od.indexOf(" b "));
+          if (catcher.indexOf("(sub)") !== -1) {
+            catcher = catcher.replace("(sub)", "");
+            if (this.showlogs) console.log("substituteCatcher : " + catcher);
+            this.playersSubstitute.push(catcher);
+            let subScore = { runs: 0, sixes: 0, fours: 0 };
+            this.playersScore.set(catcher, new Map(Object.entries(subScore)));
+            console.log("PLAYER SCORE IS SET.");
+          }
           if (this.showlogs) console.log("catcher : " + catcher);
           this.increamentMapValue(this.playersCatchingStumping, catcher, "N");
           outDescValidation++;
@@ -584,9 +654,7 @@ export default {
         }
         if (outDescValidation == 0 || outDescValidation > 1) {
           alert(
-            "Out Description" +
-              batsman[1].outDec +
-              " not handled! DB updated exited"
+            "Out Description - " + batsmen + " not handled! DB updated exited"
           );
           return false;
         }
@@ -595,10 +663,6 @@ export default {
     },
     increamentMapValue(m, key, runoutFlag) {
       const value = runoutFlag == "N" ? 1 : 0.5;
-      if (key.indexOf("(sub)") !== -1) {
-        key = key.replace("(sub)", "");
-        this.playersSubstitute.push(key);
-      }
       if (m.has(key)) {
         m.set(key, m.get(key) + value);
       } else if (m.size == 0) {
@@ -618,32 +682,50 @@ export default {
           playerMap.delete(keys);
         }
       });
+
+      for (const [keys, values] of playerMap.entries()) {
+        const playerNm =
+          this.globalNickNameMapForMatch.get(keys) !== undefined
+            ? this.globalNickNameMapForMatch.get(keys)
+            : keys;
+        if (playerNm != keys) {
+          console.log("Inside Delete : " + playerNm);
+          playerMap.set(playerNm, values);
+          playerMap.delete(keys);
+        }
+      }
       playerMap.forEach((values, keys) => {
-        let playerScoreSubMap = new Map();
-        playerScoreSubMap = this.playersScore.get(keys);
+        // console.log("keys : " + keys + " values : " + values);
         switch (type) {
           case this.switchValues.Bowling:
-            // console.log("inside bowling");
-            playerScoreSubMap.set(this.switchValues.Bowling, values);
+            // console.log("inside bowl");
+            this.playersScore.get(keys).set(this.switchValues.Bowling, values);
             break;
           case this.switchValues.BowledLbw:
             // console.log("inside bowledNlbw");
-            playerScoreSubMap.set(this.switchValues.BowledLbw, values);
+            this.playersScore
+              .get(keys)
+              .set(this.switchValues.BowledLbw, values);
             break;
           case this.switchValues.CatchingStumping:
-            // console.log("inside catchNstump");
-            playerScoreSubMap.set(this.switchValues.CatchingStumping, values);
+            // console.log("inside catchNstump " + " values: " + values);
+            this.playersScore
+              .get(keys)
+              .set(this.switchValues.CatchingStumping, values);
             break;
           case this.switchValues.RunOuts:
-            console.log("inside runouts : " + values);
-            playerScoreSubMap.set(this.switchValues.RunOuts, values);
+            // console.log(
+            //   "Player : " + keys + " inside RunOuts " + " values: " + values
+            // );
+            this.playersScore.get(keys).set(this.switchValues.RunOuts, values);
             break;
           case this.switchValues.Substitute:
-            // console.log("inside Substitute");
-            if (this.playersSubstitute.get(keys) !== undefined) {
-              playerScoreSubMap.set(this.switchValues.Substitute, "Y");
-            } else {
-              playerScoreSubMap.set(this.switchValues.Substitute, "N");
+            console.log("this.playersScore.get(values)");
+            console.log(this.playersScore.get(values));
+            if (this.playersSubstitute.includes(values)) {
+              this.playersScore
+                .get(values)
+                .set(this.switchValues.Substitute, "N");
             }
             break;
           default:

@@ -72,6 +72,15 @@ export async function deleteOwnerDocs() {
   }
   console.log("Deleted");
 }
+export async function deleteValueFromDoc(docNm, fieldNm) {
+  console.log("deleteValueFromDoc");
+  const ownerScoresdocRef = doc(db, "Owners", docNm);
+  await updateDoc(ownerScoresdocRef, {
+    [fieldNm]: deleteField(),
+  });
+  console.log("Deleted!!!");
+}
+
 export async function deleteMatchScoreOfOwners(matchToDelete) {
   console.log("deleteMatchScore");
   let ownerMap = await getFieldDataFromDoc("teams", "Names");
