@@ -503,7 +503,7 @@ export default {
       console.log(
         "**************************Updated******************************************"
       );
-      // alert("Updated successfully");
+      alert("Updated successfully");
     },
 
     claculateTotal(scoreMap) {

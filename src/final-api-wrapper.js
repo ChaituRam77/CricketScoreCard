@@ -61,10 +61,17 @@ export async function getTeamWiseTotalPoints() {
     );
 
     let totalPoints = ownerMatchScoresMap.get("1total");
-    let teamScore = { name: ownerName, totalPoints: totalPoints };
+    let map1 = new Map([...ownerMatchScoresMap.entries()].sort());
+    let map2 = new Map(Object.entries(Array.from(map1.values()).pop()));
+    // let lastKeyInMap = Array.from(map1.keys()).pop();
+    let lastMatchTotal = map2.get("1total")
+    if(lastMatchTotal==undefined)
+      lastMatchTotal = 0
+    let teamScore = { name: ownerName, lastMatchPoints : lastMatchTotal,totalPoints: totalPoints };
     teamWiseTotalPoints.push(teamScore);
+    
   }
-
+  // console.log(teamWiseTotalPoints)
   teamWiseTotalPoints.sort((a, b) => parseFloat(b.totalPoints) - parseFloat(a.totalPoints));
   for (const [i] of teamWiseTotalPoints.entries()) {
     if(i < 3) {
@@ -111,11 +118,12 @@ export async function fetchTeamWiseTotalPoints() {
         matchNo: matchNo,
         points: teamTotalPoints == undefined ? "---" : teamTotalPoints,
       };
-      // console.log(matchWiseTeamPoints)
+      
       matchWisePoints.get(owner).push(matchWiseTeamPoints);
     }
-    matchWisePoints.get(owner).sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo));
+    matchWisePoints.get(owner).sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo));    
   }
+  console.log(matchWisePoints)
 }
 
 export function getMatchWisePoints(teamName) {

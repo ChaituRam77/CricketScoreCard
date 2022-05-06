@@ -20,6 +20,7 @@ import { computed } from '@vue/runtime-core'
         <tr class="bg-secondary bg-gradient text-white">
           <th scope="col">#</th>
           <th scope="col">Team</th>
+          <th scope="col">LastMatchPoints</th>
           <th scope="col">Points</th>
         </tr>
       </thead>
@@ -29,6 +30,9 @@ import { computed } from '@vue/runtime-core'
           <th scope="row">{{ team.no }}</th>
           <td>
             <p>{{ team.name }}</p>
+          </td>
+          <td>
+            <p>{{ team.lastMatchPoints }}</p>
           </td>
           <td>
             <p>{{ team.totalPoints }}</p>
@@ -101,6 +105,7 @@ export default {
   methods: {
     async fetchScores() {
       let totalPoints = await getTeamWiseTotalPoints();
+      // console.log(totalPoints)
       await fetchTeamWiseTotalPoints();
       this.teamWiseTotalPoints = totalPoints;
     },
