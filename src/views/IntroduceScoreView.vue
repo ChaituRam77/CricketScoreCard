@@ -162,10 +162,10 @@ export default {
           "ApiScoreCard",
           this.matchNm
         );
-        if (this.writeToDB && matchExistsInDB !== undefined) {
-          alert("Match ID already introduced!!!");
-          return undefined;
-        }
+        //if (this.writeToDB && matchExistsInDB !== undefined) {
+        //  alert("Match ID already introduced!!!");
+        //  return undefined;
+       // }
         this.introduceMatchScore();
       } else {
         alert("Invalid Secret Key");
