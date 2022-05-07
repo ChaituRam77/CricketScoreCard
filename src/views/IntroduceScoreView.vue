@@ -154,7 +154,7 @@ export default {
     },
     async validsecretkeyAndProceed() {
       if (this.secretKey == "HailKing") {
-        this.showlogs = false;
+        this.showlogs = true;
         this.useAPI = true;
         this.writeToDB = true;
         this.matchNm = this.matchID + "_" + this.team1 + "vs" + this.team2;
