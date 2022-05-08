@@ -43,7 +43,7 @@ export async function getMatches() {
 
 export async function getLastMatchInfo() {
   let allMatches = await getMatches();
-  return allMatches[allMatches.length - 2]
+  return allMatches[allMatches.length - 1]
 }
 
 export async function getTeamWiseTotalPoints() {
