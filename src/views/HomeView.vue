@@ -20,7 +20,7 @@ import { computed } from '@vue/runtime-core'
         <tr class="bg-secondary bg-gradient text-white">
           <th scope="col">#</th>
           <th scope="col">Team</th>
-          <th scope="col">LastMatchPoints</th>
+          <th scope="col">{{ lastMatchInfo.teams }} (M{{ lastMatchInfo.matchNo }})</th>
           <th scope="col">Points</th>
         </tr>
       </thead>
@@ -89,6 +89,7 @@ import {
   getMatchWisePoints,
   fetchTeamWiseTotalPoints,
   getTeamWiseTotalPoints,
+  getLastMatchInfo
 } from "../final-api-wrapper";
 
 export default {
@@ -97,6 +98,7 @@ export default {
       teamWiseTotalPoints: [],
       greeting: "",
       matchWisePoints: [],
+      lastMatchInfo: "Updating..."
     };
   },
   mounted() {
@@ -108,6 +110,7 @@ export default {
       // console.log(totalPoints)
       await fetchTeamWiseTotalPoints();
       this.teamWiseTotalPoints = totalPoints;
+      this.lastMatchInfo = await getLastMatchInfo();
     },
     dynamicHeading(name) {
       this.greeting = `${name.toUpperCase()} team match-wise points`;

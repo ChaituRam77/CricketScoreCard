@@ -33,10 +33,17 @@ export async function getMatches() {
     let matchVsTeams = matchSplit[1]
     allMatches.push({
       'id': matchId,
-      'teams': matchVsTeams
+      'teams': matchVsTeams,
+      'matchNo': (matchId - 45881) / 5
     })
+    allMatches.sort((a, b) => parseFloat(a.matchNo) - parseFloat(b.matchNo)); 
   }
   return allMatches;
+}
+
+export async function getLastMatchInfo() {
+  let allMatches = await getMatches();
+  return allMatches[allMatches.length - 2]
 }
 
 export async function getTeamWiseTotalPoints() {
