@@ -192,9 +192,9 @@ export default {
         ...team1NickNameMap,
         ...team2NickNameMap,
       ]);
-      console.log(
-        "globalNickNameMapForMatch : " + [...this.globalNickNameMapForMatch]
-      );
+      // console.log(
+      //   "globalNickNameMapForMatch : " + [...this.globalNickNameMapForMatch]
+      // );
       console.log("Introducing match score");
       playersMatch.set(this.matchID, this.mom);
       if (this.showlogs) console.log("logs : " + this.matchID + this.mom);
@@ -630,7 +630,7 @@ export default {
           this.increamentMapValue(this.playersBowling, bowler, "N");
           outDescValidation++;
         }
-        if (od.includes("hit wicket")) {
+        if (od.includes("hit wicket")  || od.includes("hit wkt")) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("hit wicket bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
