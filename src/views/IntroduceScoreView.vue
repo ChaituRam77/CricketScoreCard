@@ -630,7 +630,7 @@ export default {
           this.increamentMapValue(this.playersBowling, bowler, "N");
           outDescValidation++;
         }
-        if (od.includes("hit wicket")  || od.includes("hit wkt")) {
+        if (od.includes("hit wkt")) {
           const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
           if (this.showlogs) console.log("hit wicket bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
