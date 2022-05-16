@@ -257,6 +257,7 @@ export default {
             let playerScoreSubMap = new Map();
             playerScoreSubMap.clear;
             let plyrNm = batsman[1].name;
+            plyrNm = plyrNm.trim();
             if (this.globalNickNameMapForMatch.has(plyrNm)) {
               plyrNm = this.globalNickNameMapForMatch.get(plyrNm);
               console.log(
@@ -579,7 +580,8 @@ export default {
           od.indexOf(" b ") !== -1 &&
           od.substring(0, 2) == "c "
         ) {
-          const bowler = od.substring(od.indexOf(" b ") + 3, od.length);
+          let bowler = od.substring(od.indexOf(" b ") + 3, od.length);
+          bowler = bowler.trim()
           if (this.showlogs) console.log("bowler : " + bowler);
           this.increamentMapValue(this.playersBowling, bowler, "N");
           let catcher = od.substring(2, od.indexOf(" b "));
